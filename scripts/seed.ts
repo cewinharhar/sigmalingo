@@ -1,5 +1,14 @@
-import db from "@/db/drizzle";
+import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-http";
 import { profileQuestions, userProfiles } from "@/db/schema";
+import "dotenv/config";
+
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL is not set in environment variables");
+}
+
+const sql = neon(process.env.DATABASE_URL);
+const db = drizzle(sql);
 
 interface ProfileQuestion {
   question: string;
@@ -75,29 +84,33 @@ const questions: ProfileQuestion[] = [
 
 async function seed() {
   try {
-    console.log("Seeding database...");
+    console.log("🌱 Starting database seeding...");
 
     // Seed profile questions
-    console.log("Seeding profile questions...");
+    console.log("📝 Seeding profile questions...");
     for (const question of questions) {
       await db.insert(profileQuestions).values(question);
     }
-    console.log("Profile questions seeded successfully!");
+    console.log("✅ Profile questions seeded successfully!");
 
     // Create a default user profile for testing
-    console.log("Creating default user profile...");
+    console.log("👤 Creating default user profile...");
     await db.insert(userProfiles).values({
       userId: "test_user",
       learningStyle: "Visual",
       interests: ["Technology", "Business"],
       goals: ["Career advancement", "Personal development"],
     });
-    console.log("Default user profile created successfully!");
+    console.log("✅ Default user profile created successfully!");
 
-    console.log("Database seeding completed!");
+    console.log("🎉 Database seeding completed successfully!");
   } catch (error) {
-    console.error("Error seeding database:", error);
+    console.error("❌ Error seeding database:", error);
+    process.exit(1);
+  } finally {
+    process.exit(0);
   }
 }
 
+// Execute the seed function
 seed(); 

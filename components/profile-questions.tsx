@@ -1,14 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Loader2 } from "lucide-react";
+import { Loader2, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { ProfileQuestionModal } from "./profile-question-modal";
+import Image from "next/image";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 interface ProfileQuestion {
   id: number;
@@ -18,24 +25,39 @@ interface ProfileQuestion {
   order: number;
 }
 
-export const ProfileQuestions = () => {
+export interface ProfileQuestionsRef {
+  handleExit: () => void;
+}
+
+export const ProfileQuestions = forwardRef<ProfileQuestionsRef>((_, ref) => {
   const [questions, setQuestions] = useState<ProfileQuestion[]>([]);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [isFirstTime, setIsFirstTime] = useState(false);
+  const [selectedQuestion, setSelectedQuestion] = useState<ProfileQuestion | null>(null);
+  const [showExitWarning, setShowExitWarning] = useState(false);
   const router = useRouter();
+
+  useImperativeHandle(ref, () => ({
+    handleExit: () => {
+      const answeredCount = Object.keys(answers).length;
+      if (answeredCount === 0) {
+        setShowExitWarning(true);
+      } else {
+        router.push("/courses");
+      }
+    }
+  }));
 
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
         const response = await fetch("/api/profile-questions");
         if (!response.ok) throw new Error("Failed to fetch questions");
-        const data = await response.json();
+        const { data } = await response.json();
         setQuestions(data);
       } catch (error) {
         console.error("Error fetching questions:", error);
+        toast.error("Failed to load profile questions");
       } finally {
         setLoading(false);
       }
@@ -45,17 +67,15 @@ export const ProfileQuestions = () => {
       try {
         const response = await fetch("/api/profile-answers");
         if (!response.ok) throw new Error("Failed to fetch answers");
-        const data = await response.json();
+        const { data } = await response.json();
         const answersMap = data.reduce((acc: Record<number, string>, curr: any) => {
           acc[curr.questionId] = curr.answer;
           return acc;
         }, {});
         setAnswers(answersMap);
-        
-        // Check if this is a first-time user (no answers yet)
-        setIsFirstTime(Object.keys(answersMap).length === 0);
       } catch (error) {
         console.error("Error fetching answers:", error);
+        toast.error("Failed to load profile answers");
       }
     };
 
@@ -63,39 +83,25 @@ export const ProfileQuestions = () => {
     fetchAnswers();
   }, []);
 
-  const handleAnswer = async (answer: string) => {
-    const currentQuestion = questions[currentQuestionIndex];
-    setAnswers(prev => ({ ...prev, [currentQuestion.id]: answer }));
-
+  const handleAnswer = async (questionId: number, answer: string) => {
     try {
-      setSaving(true);
       const response = await fetch("/api/profile-questions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          questionId: currentQuestion.id,
+          questionId,
           answer,
         }),
       });
 
       if (!response.ok) throw new Error("Failed to save answer");
 
-      if (currentQuestionIndex < questions.length - 1) {
-        setCurrentQuestionIndex(prev => prev + 1);
-        toast.success("Answer saved!");
-      } else {
-        // All questions answered
-        toast.success("Profile completed!");
-        if (isFirstTime) {
-          // Redirect to learn page only for first-time users
-          router.push("/learn");
-        }
-      }
+      setAnswers(prev => ({ ...prev, [questionId]: answer }));
+      toast.success("Answer saved!");
     } catch (error) {
       console.error("Error saving answer:", error);
       toast.error("Failed to save answer");
-    } finally {
-      setSaving(false);
+      throw error;
     }
   };
 
@@ -116,81 +122,87 @@ export const ProfileQuestions = () => {
     );
   }
 
-  const currentQuestion = questions[currentQuestionIndex];
-  const isLastQuestion = currentQuestionIndex === questions.length - 1;
+  const answeredCount = Object.keys(answers).length;
+  const totalQuestions = questions.length;
 
   return (
-    <Card className="p-6">
-      <div className="space-y-6">
-        <div className="space-y-2">
-          <h2 className="text-2xl font-bold">
-            {isFirstTime ? "Let's get to know you better" : "Profile Questions"}
-          </h2>
-          <p className="text-muted-foreground">
-            Question {currentQuestionIndex + 1} of {questions.length}
-          </p>
-        </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <Card className="p-6">
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold text-white">Let's get to know you better</h2>
+            <p className="text-muted-foreground">
+              {answeredCount} of {totalQuestions} questions answered
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Please answer at least one question before continuing.
+            </p>
+          </div>
 
-        <div className="space-y-4">
-          <h3 className="text-xl font-semibold">{currentQuestion.question}</h3>
-
-          {currentQuestion.type === "CHOICE" && currentQuestion.options ? (
-            <RadioGroup
-              onValueChange={handleAnswer}
-              value={answers[currentQuestion.id] || ""}
-              className="space-y-3"
-            >
-              {currentQuestion.options.map((option) => (
-                <div key={option} className="flex items-center space-x-2">
-                  <RadioGroupItem value={option} id={option} />
-                  <Label htmlFor={option}>{option}</Label>
-                </div>
-              ))}
-            </RadioGroup>
-          ) : (
-            <div className="space-y-4">
-              <Input
-                type="text"
-                placeholder="Type your answer..."
-                value={answers[currentQuestion.id] || ""}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleAnswer(e.target.value)}
-              />
-              <Button
-                onClick={() => handleAnswer(answers[currentQuestion.id] || "")}
-                disabled={!answers[currentQuestion.id] || saving}
-              >
-                {saving ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
-                  </>
-                ) : isLastQuestion ? (
-                  "Complete Profile"
-                ) : (
-                  "Save Answer"
+          <div className="space-y-4">
+            {questions.map((question) => (
+              <div key={question.id} className="space-y-2">
+                <Button
+                  variant="secondary"
+                  className="w-full justify-start p-4 h-auto bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700"
+                  onClick={() => setSelectedQuestion(question)}
+                >
+                  <div className="flex items-center space-x-3 w-full">
+                    {answers[question.id] && (
+                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                    )}
+                    <span className="text-left">{question.question}</span>
+                  </div>
+                </Button>
+                {answers[question.id] && (
+                  <p className="text-sm text-muted-foreground pl-8">
+                    Your answer: {answers[question.id]}
+                  </p>
                 )}
-              </Button>
-            </div>
-          )}
+              </div>
+            ))}
+          </div>
         </div>
+      </Card>
 
-        <div className="flex justify-between">
-          <Button
-            variant="secondary"
-            onClick={() => setCurrentQuestionIndex(prev => Math.max(0, prev - 1))}
-            disabled={currentQuestionIndex === 0}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={() => setCurrentQuestionIndex(prev => Math.min(questions.length - 1, prev + 1))}
-            disabled={currentQuestionIndex === questions.length - 1}
-          >
-            Next
-          </Button>
-        </div>
+      <div className="relative h-[600px] w-full">
+        <Image
+          src="/profile.png"
+          alt="Profile"
+          fill
+          className="object-contain"
+          priority
+        />
       </div>
-    </Card>
+
+      {selectedQuestion && (
+        <ProfileQuestionModal
+          isOpen={!!selectedQuestion}
+          onClose={() => setSelectedQuestion(null)}
+          question={selectedQuestion}
+          onAnswer={handleAnswer}
+          currentAnswer={answers[selectedQuestion.id]}
+        />
+      )}
+
+      <Dialog open={showExitWarning} onOpenChange={setShowExitWarning}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Please answer at least one question</DialogTitle>
+            <DialogDescription>
+              We need at least one answer to get to know you better and provide a personalized learning experience.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="secondary" onClick={() => setShowExitWarning(false)}>
+              Stay and Answer
+            </Button>
+            <Button variant="danger" onClick={() => router.push("/courses")}>
+              Exit Anyway
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
-}; 
+}); 

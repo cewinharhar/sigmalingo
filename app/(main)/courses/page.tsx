@@ -1,6 +1,6 @@
 import { getCourses, getUserProgress } from "@/db/queries";
-
 import { List } from "./list";
+import { ProfileReminderWrapper } from "@/components/profile-reminder-wrapper";
 
 const CoursesPage = async () => {
   const coursesData = getCourses();
@@ -10,11 +10,12 @@ const CoursesPage = async () => {
     coursesData,
     userProgressData,
   ]);
+
   return (
     <div className="mx-auto h-full max-w-[912px] px-3">
       <h1 className="text-2xl font-bold text-white">Personal Development Courses</h1>
-
       <List courses={courses} activeCourseId={userProgress?.activeCourseId} />
+      <ProfileReminderWrapper />
     </div>
   );
 };

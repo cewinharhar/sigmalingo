@@ -1,18 +1,18 @@
-import { ProfileQuestions } from "@/components/profile-questions";
-import { ProfileAnswers } from "@/components/profile-answers";
+"use client";
 
-const ProfilePage = () => {
+import { ProfileQuestions } from "@/components/profile-questions";
+import { Header } from "@/app/(main)/learn/header";
+import { useRef } from "react";
+
+export default function ProfilePage() {
+  const profileQuestionsRef = useRef<{ handleExit: () => void }>(null);
+
   return (
-    <div className="flex h-full flex-col gap-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Your Profile</h1>
-      </div>
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <ProfileQuestions />
-        <ProfileAnswers />
+    <div className="flex flex-col h-full">
+      <Header title="Profile" onExit={() => profileQuestionsRef.current?.handleExit()} />
+      <div className="container mx-auto py-6 flex-1">
+        <ProfileQuestions ref={profileQuestionsRef} />
       </div>
     </div>
   );
-};
-
-export default ProfilePage; 
+} 
