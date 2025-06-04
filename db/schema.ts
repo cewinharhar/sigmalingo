@@ -7,6 +7,7 @@ import {
   serial,
   text,
   timestamp,
+  varchar,
 } from "drizzle-orm/pg-core";
 
 import { MAX_HEARTS } from "@/constants";
@@ -154,3 +155,104 @@ export const userSubscription = pgTable("user_subscription", {
   stripePriceId: text("stripe_price_id").notNull(),
   stripeCurrentPeriodEnd: timestamp("stripe_current_period_end").notNull(),
 });
+
+export const questionTypeEnum = pgEnum("question_type", ["CHOICE", "TEXT"]);
+
+export const profileQuestions = pgTable("profile_questions", {
+  id: serial("id").primaryKey(),
+  question: text("question").notNull(),
+  type: questionTypeEnum("type").notNull(),
+  options: text("options").array(),
+  order: integer("order").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const userProfileAnswers = pgTable("user_profile_answers", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id", { length: 191 }).notNull(),
+  questionId: integer("question_id")
+    .notNull()
+    .references(() => profileQuestions.id),
+  answer: text("answer").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const userProfiles = pgTable("user_profiles", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id", { length: 191 }).notNull().unique(),
+  learningStyle: varchar("learning_style", { length: 50 }),
+  interests: text("interests").array(),
+  goals: text("goals").array(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const wrongAnswers = pgTable("wrong_answers", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id", { length: 191 }).notNull(),
+  challengeId: integer("challenge_id")
+    .notNull()
+    .references(() => challenges.id),
+  selectedOptionId: integer("selected_option_id")
+    .notNull()
+    .references(() => challengeOptions.id),
+  unitId: integer("unit_id")
+    .notNull()
+    .references(() => units.id),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const unitTools = pgTable("unit_tools", {
+  id: serial("id").primaryKey(),
+  unitId: integer("unit_id")
+    .references(() => units.id, {
+      onDelete: "cascade",
+    })
+    .notNull(),
+  toolName: text("tool_name").notNull(),
+  toolDescription: text("tool_description").notNull(),
+  toolUrl: text("tool_url"),
+  order: integer("order").notNull(),
+});
+
+export const profileQuestionsRelations = relations(profileQuestions, ({ many }) => ({
+  answers: many(userProfileAnswers),
+}));
+
+export const userProfileAnswersRelations = relations(userProfileAnswers, ({ one }) => ({
+  question: one(profileQuestions, {
+    fields: [userProfileAnswers.questionId],
+    references: [profileQuestions.id],
+  }),
+}));
+
+export const userProfilesRelations = relations(userProfiles, ({ one }) => ({
+  user: one(userProgress, {
+    fields: [userProfiles.userId],
+    references: [userProgress.userId],
+  }),
+}));
+
+export const wrongAnswersRelations = relations(wrongAnswers, ({ one }) => ({
+  challenge: one(challenges, {
+    fields: [wrongAnswers.challengeId],
+    references: [challenges.id],
+  }),
+  selectedOption: one(challengeOptions, {
+    fields: [wrongAnswers.selectedOptionId],
+    references: [challengeOptions.id],
+  }),
+  unit: one(units, {
+    fields: [wrongAnswers.unitId],
+    references: [units.id],
+  }),
+}));
+
+export const unitToolsRelations = relations(unitTools, ({ one }) => ({
+  unit: one(units, {
+    fields: [unitTools.unitId],
+    references: [units.id],
+  }),
+}));

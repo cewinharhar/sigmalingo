@@ -29,6 +29,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
       </Link>
 
       <div className="flex flex-1 flex-col gap-y-2">
+        <SidebarItem label="Profile" href="/profile" iconSrc="/progress_sigma.png" />
         <SidebarItem label="Learn" href="/learn" iconSrc="/learn.png" />
         <SidebarItem
           label="Leaderboard"

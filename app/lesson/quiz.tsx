@@ -143,6 +143,19 @@ export const Quiz = ({
               return;
             }
 
+            // Track wrong answer
+            fetch("/api/wrong-answers", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                challengeId: challenge.id,
+                selectedOptionId: selectedOption,
+                unitId: challenge.lessonId, // Using lessonId as unitId for now
+              }),
+            }).catch((error) => {
+              console.error("Error tracking wrong answer:", error);
+            });
+
             void incorrectControls.play();
             setStatus("wrong");
 
