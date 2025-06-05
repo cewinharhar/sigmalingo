@@ -4,7 +4,7 @@ import { drizzle } from "drizzle-orm/neon-http";
 
 import * as schema from "@/db/schema";
 import { COURSE_CONTENT } from "./content";
-import { type ChallengeTemplate } from "./types";
+import { type ChallengeTemplate, type Lesson, type Unit } from "./types";
 
 const sql = neon(process.env.DATABASE_URL);
 const db = drizzle(sql, { schema });
@@ -77,79 +77,52 @@ const createChallengeOptions = async (challengeId: number, options: { text: stri
   );
 };
 
-const createChallenges = async (lessonId: number, courseTitle: string, imageSrc: string) => {
-  // Get challenges for this course from the content file
-  const courseChallenges = COURSE_CONTENT[courseTitle] || [];
-  
-  // If no specific challenges exist for this course, use default templates
-  if (courseChallenges.length === 0) {
-    const defaultChallenges: ChallengeTemplate[] = [
-      {
-        type: "SELECT" as const,
-        question: `What's the foundation of ${courseTitle.toLowerCase()}?`,
-        order: 1,
-        options: [
-          { text: "Understanding and awareness", correct: true },
-          { text: "Setting ambitious goals", correct: false },
-          { text: "Finding motivation", correct: false }
-        ]
-      },
-      {
-        type: "SELECT" as const,
-        question: `What's the most effective way to improve ${courseTitle.toLowerCase()}?`,
-        order: 2,
-        options: [
-          { text: "Consistent practice and dedication", correct: true },
-          { text: "Quick fixes and shortcuts", correct: false },
-          { text: "Waiting for inspiration", correct: false }
-        ]
-      }
-    ];
-    
-    for (const challenge of defaultChallenges) {
-      const createdChallenge = await db.insert(schema.challenges)
-        .values({
-          lessonId,
-          type: challenge.type,
-          question: challenge.question,
-          order: challenge.order
-        })
-        .returning();
-
-      await createChallengeOptions(createdChallenge[0].id, challenge.options);
-    }
-  } else {
-    // Use the specific challenges from the content file
-    for (const challenge of courseChallenges) {
-      const createdChallenge = await db.insert(schema.challenges)
-        .values({
-          lessonId,
-          type: challenge.type,
-          question: challenge.question,
-          order: challenge.order
-        })
-        .returning();
-
-      await createChallengeOptions(createdChallenge[0].id, challenge.options);
-    }
-  }
-};
-
-const createLessons = async (unitId: number, courseTitle: string, imageSrc: string) => {
-  for (const template of LESSON_TEMPLATES) {
-    const lesson = await db.insert(schema.lessons)
+const createChallenges = async (lessonId: number, challenges: ChallengeTemplate[]) => {
+  for (const challenge of challenges) {
+    const createdChallenge = await db.insert(schema.challenges)
       .values({
-        unitId,
-        title: template.title,
-        order: template.order
+        lessonId,
+        type: challenge.type,
+        question: challenge.question,
+        order: challenge.order
       })
       .returning();
 
-    await createChallenges(lesson[0].id, courseTitle, imageSrc);
+    await createChallengeOptions(createdChallenge[0].id, challenge.options);
   }
 };
 
-const createUnits = async (courseId: number, courseTitle: string, imageSrc: string) => {
+const createLessons = async (unitId: number, lessons: Lesson[]) => {
+  for (const lesson of lessons) {
+    const createdLesson = await db.insert(schema.lessons)
+      .values({
+        unitId,
+        title: lesson.title,
+        order: lesson.order
+      })
+      .returning();
+
+    await createChallenges(createdLesson[0].id, lesson.challenges);
+  }
+};
+
+const createUnits = async (courseId: number, units: Unit[]) => {
+  for (const unit of units) {
+    const createdUnit = await db.insert(schema.units)
+      .values({
+        courseId,
+        title: unit.title,
+        description: unit.description,
+        order: unit.order
+      })
+      .returning();
+
+    await createLessons(createdUnit[0].id, unit.lessons);
+  }
+};
+
+const createDefaultContent = async (courseId: number, courseTitle: string) => {
+  // Create default units if no specific content exists
   for (const template of UNIT_TEMPLATES) {
     const unit = await db.insert(schema.units)
       .values({
@@ -160,7 +133,42 @@ const createUnits = async (courseId: number, courseTitle: string, imageSrc: stri
       })
       .returning();
 
-    await createLessons(unit[0].id, courseTitle, imageSrc);
+    // Create default lessons for this unit
+    for (const lessonTemplate of LESSON_TEMPLATES) {
+      const lesson = await db.insert(schema.lessons)
+        .values({
+          unitId: unit[0].id,
+          title: lessonTemplate.title,
+          order: lessonTemplate.order
+        })
+        .returning();
+
+      // Create default challenges for this lesson
+      const defaultChallenges: ChallengeTemplate[] = [
+        {
+          type: "SELECT" as const,
+          question: `What's the foundation of ${courseTitle.toLowerCase()}?`,
+          order: 1,
+          options: [
+            { text: "Understanding and awareness", correct: true },
+            { text: "Setting ambitious goals", correct: false },
+            { text: "Finding motivation", correct: false }
+          ]
+        },
+        {
+          type: "SELECT" as const,
+          question: `What's the most effective way to improve ${courseTitle.toLowerCase()}?`,
+          order: 2,
+          options: [
+            { text: "Consistent practice and dedication", correct: true },
+            { text: "Quick fixes and shortcuts", correct: false },
+            { text: "Waiting for inspiration", correct: false }
+          ]
+        }
+      ];
+
+      await createChallenges(lesson[0].id, defaultChallenges);
+    }
   }
 };
 
@@ -188,7 +196,13 @@ const main = async () => {
         })
         .returning();
 
-      await createUnits(createdCourse[0].id, course.title, course.imageSrc);
+      // If this course has specific content in COURSE_CONTENT, use it
+      if (COURSE_CONTENT[course.title]) {
+        await createUnits(createdCourse[0].id, COURSE_CONTENT[course.title].units);
+      } else {
+        // Otherwise, use default content
+        await createDefaultContent(createdCourse[0].id, course.title);
+      }
     }
 
     console.log("Seeding finished");

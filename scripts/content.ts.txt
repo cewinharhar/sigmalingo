@@ -1,3 +1,4 @@
+// scripts/types.ts
 export type ChallengeType = "SELECT" | "ASSIST";
 
 export type ChallengeOption = {
@@ -33,4 +34,14 @@ export type CourseContent = {
   imageSrc: string;
   description: string;
   units: Unit[];
-}; 
+};
+
+export const COURSE_CONTENT: Record<string, CourseContent> = {
+  "Self Growth": {
+    id: 1,
+    title: "Self Growth",
+    imageSrc: "/selfGrowth_sigma.png",
+    description: "Master your mindset and unlock your potential",
+    units: []
+  }
+};

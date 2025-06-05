@@ -151,7 +151,7 @@ export const ProfileQuestions = forwardRef<ProfileQuestionsRef>((_, ref) => {
                     {answers[question.id] && (
                       <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
                     )}
-                    <span className="text-left">{question.question}</span>
+                    <span className="text-left text-sm sm:text-base break-words whitespace-normal">{question.question}</span>
                   </div>
                 </Button>
                 {answers[question.id] && (

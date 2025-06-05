@@ -44,13 +44,13 @@ export const Quiz = ({
   userSubscription,
 }: QuizProps) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [correctAudio, _c, correctControls] = useAudio({ src: "/correct.wav" });
+  const [correctAudio, _c, correctControls] = useAudio({ src: "/yeahBuddy.mp3" });
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [incorrectAudio, _i, incorrectControls] = useAudio({
     src: "/incorrect.wav",
   });
   const [finishAudio] = useAudio({
-    src: "/finish.mp3",
+    src: "/correct.wav",
     autoPlay: true,
   });
   const { width, height } = useWindowSize();
