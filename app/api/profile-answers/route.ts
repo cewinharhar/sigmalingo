@@ -35,10 +35,38 @@ export async function GET() {
     // Combine questions and answers
     const profileAnswers = questions.map((question) => {
       const answer = answers.find((a) => a.questionId === question.id);
+      
+      let formattedAnswer: string | string[] = "Not answered yet";
+      if (answer?.answer && answer.answer.trim() !== '') {
+        if (question.type === "MULTI_SELECT") {
+          try {
+            const parsedAnswer = JSON.parse(answer.answer);
+            // Ensure the answer is an array and has at least one non-empty value
+            if (Array.isArray(parsedAnswer) && parsedAnswer.length > 0 && parsedAnswer.some(item => item.trim() !== '')) {
+              formattedAnswer = parsedAnswer;
+            }
+          } catch {
+            // Handle case where answer might be stored as comma-separated string
+            const items = answer.answer.split(',').map(item => item.trim()).filter(item => item !== '');
+            if (items.length > 0) {
+              formattedAnswer = items;
+            }
+          }
+        } else {
+          // For non-multi-select, only set answer if it's not empty
+          const trimmedAnswer = answer.answer.trim();
+          if (trimmedAnswer !== '') {
+            formattedAnswer = trimmedAnswer;
+          }
+        }
+      }
+
       return {
         questionId: question.id,
         question: question.question,
-        answer: answer?.answer || "Not answered yet",
+        type: question.type,
+        options: question.options,
+        answer: formattedAnswer,
       };
     });
 
@@ -60,4 +88,4 @@ export async function GET() {
       }
     );
   }
-} 
+}

@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import db from "@/db/drizzle";
-import { wrongAnswers, userProfileAnswers, profileQuestions } from "@/db/schema";
+import { wrongAnswers, userProfileAnswers, profileQuestions, unitTools, lessons, challenges, challengeProgress } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import OpenAI from "openai";
 
@@ -18,13 +18,56 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { unitId } = body;
-
-    if (!unitId) {
-      return new NextResponse("Missing unit ID", { status: 400 });
+    console.log("Received request body:", body);
+    
+    if (!body || (!body.unitId && body.unitId !== 0)) {
+      console.log("Invalid body:", body);
+      return new NextResponse(
+        JSON.stringify({ error: "Invalid or missing unit ID" }), 
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
     }
 
-    // Get user's profile answers
+    const unitId = parseInt(body.unitId, 10);
+    if (isNaN(unitId)) {
+      console.log("Invalid unitId (NaN):", body.unitId);
+      return new NextResponse(
+        JSON.stringify({ error: "Unit ID must be a valid number" }), 
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Check if the unit is actually completed
+    const lessonsInUnit = await db.query.lessons.findMany({
+      where: eq(lessons.unitId, unitId),
+      with: {
+        challenges: {
+          with: {
+            challengeProgress: {
+              where: eq(challengeProgress.userId, userId),
+            },
+          },
+        },
+      },
+    });
+
+    // Check if all challenges in all lessons are completed
+    const isUnitCompleted = lessonsInUnit.every((lesson) =>
+      lesson.challenges.every(
+        (challenge) =>
+          challenge.challengeProgress &&
+          challenge.challengeProgress.length > 0 &&
+          challenge.challengeProgress.every((progress) => progress.completed)
+      )
+    );
+
+    if (!isUnitCompleted) {
+      return NextResponse.json({ 
+        feedback: "Please complete all lessons in this unit to receive feedback.",
+        tools: [] 
+      });
+    }
+
     const profileAnswers = await db.query.userProfileAnswers.findMany({
       where: eq(userProfileAnswers.userId, userId),
       with: {
@@ -39,6 +82,12 @@ export async function POST(req: Request) {
         challenge: true,
         selectedOption: true,
       },
+    });
+
+    // Get unit's recommended tools
+    const unitToolsList = await db.query.unitTools.findMany({
+      where: eq(unitTools.unitId, unitId),
+      orderBy: (tools) => [tools.order],
     });
 
     // Prepare context for OpenAI
@@ -62,16 +111,18 @@ Areas of Difficulty:
 ${wrongAnswersContext}
 
 Please provide:
-1. A brief analysis of their strengths and areas for improvement
-2. Specific suggestions for practice and improvement
-3. Motivational feedback tailored to their goals and challenges
-4. Recommended tools or resources that could help them improve
+A very short feedback on their performance in this unit.
+Suggestions for improvement, focusing on areas where they struggled.
+Include any relevant tools or resources that could help them improve in these areas.
+Make it concise, actionable, and friendly.
+Use a friendly and encouraging tone, as if you are a supportive mentor.
+Remember to keep the feedback light-hearted and encouraging, as if you are a supportive mentor. Use a friendly and approachable tone.
 
 Keep the feedback encouraging and actionable.`;
 
     const completion = await openai.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
-      model: "gpt-4-turbo-preview",
+      model: "gpt-4.1-nano-2025-04-14",
       temperature: 0.7,
       max_tokens: 500,
     });
@@ -82,7 +133,10 @@ Keep the feedback encouraging and actionable.`;
       return new NextResponse("Failed to generate feedback", { status: 500 });
     }
 
-    return NextResponse.json({ feedback });
+    return NextResponse.json({ 
+      feedback,
+      tools: unitToolsList 
+    });
   } catch (error) {
     console.error("[UNIT_FEEDBACK_POST]", error);
     return new NextResponse("Internal Error", { status: 500 });

@@ -14,6 +14,7 @@ import { MAX_HEARTS } from "@/constants";
 import { challengeOptions, challenges, userSubscription } from "@/db/schema";
 import { useHeartsModal } from "@/store/use-hearts-modal";
 import { usePracticeModal } from "@/store/use-practice-modal";
+import { useFeedbackModal } from "@/store/use-feedback-modal";
 
 import { Challenge } from "./challenge";
 import { Footer } from "./footer";
@@ -25,6 +26,7 @@ type QuizProps = {
   initialPercentage: number;
   initialHearts: number;
   initialLessonId: number;
+  unitId: number;
   initialLessonChallenges: (typeof challenges.$inferSelect & {
     completed: boolean;
     challengeOptions: (typeof challengeOptions.$inferSelect)[];
@@ -42,15 +44,16 @@ export const Quiz = ({
   initialLessonId,
   initialLessonChallenges,
   userSubscription,
+  unitId,
 }: QuizProps) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [correctAudio, _c, correctControls] = useAudio({ src: "/yeahBuddy.mp3" });
+  const [correctAudio, _c, correctControls] = useAudio({ src: "/correct.wav" });
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [incorrectAudio, _i, incorrectControls] = useAudio({
     src: "/incorrect.wav",
   });
   const [finishAudio] = useAudio({
-    src: "/correct.wav",
+    src: "/lightWeight.mp3",
     autoPlay: true,
   });
   const { width, height } = useWindowSize();
@@ -59,6 +62,7 @@ export const Quiz = ({
   const [pending, startTransition] = useTransition();
   const { open: openHeartsModal } = useHeartsModal();
   const { open: openPracticeModal } = usePracticeModal();
+  const { open: openFeedbackModal } = useFeedbackModal();
 
   useMount(() => {
     if (initialPercentage === 100) openPracticeModal();
@@ -125,7 +129,38 @@ export const Quiz = ({
 
             void correctControls.play();
             setStatus("correct");
-            setPercentage((prev) => prev + 100 / challenges.length);
+            const newPercentage = Math.min(percentage + 100 / challenges.length, 100);
+            setPercentage(newPercentage);
+
+            // If this was the last challenge, check if the unit is completed
+            if (activeIndex === challenges.length - 1) {
+              fetch('/api/check-unit-completion', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ unitId }),
+              })
+                .then(res => res.json())
+                .then(({ isCompleted }) => {
+                  if (isCompleted) {
+                    // If unit is completed, fetch and show feedback
+                    fetch(`/api/unit-feedback`, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ unitId }),
+                    })
+                      .then((res) => res.json())
+                      .then(({ feedback, tools }) => {
+                        openFeedbackModal(feedback, tools);
+                      })
+                      .catch((error) => {
+                        console.error("Error fetching feedback:", error);
+                      });
+                  }
+                })
+                .catch((error) => {
+                  console.error("Error checking unit completion:", error);
+                });
+            }
 
             // This is a practice
             if (initialPercentage === 100) {
@@ -150,7 +185,7 @@ export const Quiz = ({
               body: JSON.stringify({
                 challengeId: challenge.id,
                 selectedOptionId: selectedOption,
-                unitId: challenge.lessonId, // Using lessonId as unitId for now
+                unitId, // Use the correct unitId passed as prop
               }),
             }).catch((error) => {
               console.error("Error tracking wrong answer:", error);

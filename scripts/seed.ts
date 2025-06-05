@@ -12,71 +12,106 @@ const db = drizzle(sql);
 
 interface ProfileQuestion {
   question: string;
-  type: "CHOICE" | "TEXT";
+  type: "CHOICE" | "TEXT" | "MULTI_SELECT";
   options?: string[];
   order: number;
 }
 
 const questions: ProfileQuestion[] = [
   {
-    question: "What is your current age?",
-    type: "CHOICE",
-    options: ["18-24", "25-34", "35-44", "45-54", "55+"],
+    question: "Please enter your age",
+    type: "TEXT",
     order: 1,
   },
   {
-    question: "What is your current employment status?",
+    question: "What best describes your current professional status?",
     type: "CHOICE",
-    options: ["Employed full-time", "Employed part-time", "Self-employed", "Student", "Unemployed", "Other"],
+    options: [
+      "Full-time Professional",
+      "Part-time Professional",
+      "Entrepreneur/Business Owner",
+      "Student/Academic",
+      "Career Transition",
+      "Other"
+    ],
     order: 2,
   },
   {
-    question: "What are your main life goals? (Select all that apply)",
-    type: "CHOICE",
+    question: "Which professional and personal objectives are you pursuing? (Select all that apply)",
+    type: "MULTI_SELECT",
     options: [
-      "Career advancement",
-      "Financial independence",
-      "Personal relationships",
-      "Health and fitness",
-      "Personal development",
-      "Work-life balance",
+      "Career Advancement",
+      "Financial Independence",
+      "Professional Network Development",
+      "Leadership Skills",
+      "Work-Life Integration",
+      "Personal Growth",
+      "Professional Education",
+      "Business Development",
+      "Industry Expertise",
+      "Global Perspective"
     ],
     order: 3,
   },
   {
-    question: "What areas do you struggle with the most?",
-    type: "TEXT",
+    question: "Which areas would you like to develop further professionally?",
+    type: "MULTI_SELECT",
+    options: [
+      "Strategic Planning",
+      "Communication Skills",
+      "Team Leadership",
+      "Technical Expertise",
+      "Project Management",
+      "Business Acumen",
+      "Innovation/Creativity",
+      "Cross-cultural Competence",
+      "Digital Literacy",
+      "Time Management"
+    ],
     order: 4,
   },
   {
-    question: "What motivates you to improve yourself?",
+    question: "What drives your professional development goals?",
     type: "TEXT",
     order: 5,
   },
   {
-    question: "How much time can you dedicate to personal development daily?",
+    question: "How much time can you allocate to professional development weekly?",
     type: "CHOICE",
-    options: ["Less than 30 minutes", "30 minutes to 1 hour", "1-2 hours", "More than 2 hours"],
+    options: [
+      "1-2 hours",
+      "3-5 hours",
+      "6-8 hours",
+      "More than 8 hours"
+    ],
     order: 6,
   },
   {
-    question: "What is your preferred learning style?",
+    question: "What is your preferred method of professional learning?",
     type: "CHOICE",
-    options: ["Visual", "Auditory", "Reading/Writing", "Kinesthetic"],
+    options: [
+      "Visual/Diagrammatic Learning",
+      "Interactive/Hands-on Practice",
+      "Text-based/Documentation",
+      "Audio/Discussion-based",
+      "Mixed Methods"
+    ],
     order: 7,
   },
   {
-    question: "What are your main interests? (Select all that apply)",
-    type: "CHOICE",
+    question: "Which industry sectors interest you most? (Select all that apply)",
+    type: "MULTI_SELECT",
     options: [
-      "Technology",
-      "Business",
-      "Health & Fitness",
-      "Arts & Creativity",
-      "Science",
-      "Social Skills",
-      "Personal Finance",
-      "Other",
+      "Technology/Software",
+      "Business/Finance",
+      "Healthcare/Life Sciences",
+      "Engineering/Manufacturing",
+      "Creative Industries",
+      "Education/Research",
+      "Environmental/Sustainability",
+      "Consulting/Professional Services",
+      "Public Sector/Government",
+      "Entrepreneurship/Startups"
     ],
     order: 8,
   },

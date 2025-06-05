@@ -156,7 +156,7 @@ export const userSubscription = pgTable("user_subscription", {
   stripeCurrentPeriodEnd: timestamp("stripe_current_period_end").notNull(),
 });
 
-export const questionTypeEnum = pgEnum("question_type", ["CHOICE", "TEXT"]);
+export const questionTypeEnum = pgEnum("question_type", ["CHOICE", "TEXT", "MULTI_SELECT"]);
 
 export const profileQuestions = pgTable("profile_questions", {
   id: serial("id").primaryKey(),

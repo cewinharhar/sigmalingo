@@ -19,21 +19,52 @@ export const UnitFeedback = ({ unitId }: UnitFeedbackProps) => {
   const [feedback, setFeedback] = useState<string>("");
   const [tools, setTools] = useState<Tool[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  console.log("UnitFeedback component rendered with unitId:", { unitId, type: typeof unitId });
 
   useEffect(() => {
     const fetchFeedback = async () => {
       try {
+        console.log("Sending request with unitId:", unitId);
         const response = await fetch("/api/unit-feedback", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ unitId }),
+          headers: { 
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({ 
+            unitId: parseInt(String(unitId), 10)
+          })
         });
 
-        if (!response.ok) throw new Error("Failed to fetch feedback");
+        const contentType = response.headers.get("content-type");
+        if (!response.ok) {
+          if (contentType && contentType.includes("application/json")) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Failed to fetch feedback");
+          } else {
+            const errorText = await response.text();
+            throw new Error(`Server error: ${errorText}`);
+          }
+        }
+        
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error(`Expected JSON response but got ${contentType}`);
+        }
+
         const data = await response.json();
+        console.log("Received data:", data);
+        
+        if (!data.feedback) {
+          throw new Error("No feedback received from server");
+        }
         setFeedback(data.feedback);
+        if (data.tools) {
+          setTools(data.tools);
+        }
       } catch (error) {
         console.error("Error fetching feedback:", error);
+        setFeedback("Unable to load personalized feedback at this time. Please try again later.");
       } finally {
         setLoading(false);
       }

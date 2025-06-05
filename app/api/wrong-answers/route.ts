@@ -1,7 +1,8 @@
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import db from "@/db/drizzle";
-import { wrongAnswers } from "@/db/schema";
+import { wrongAnswers, units } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export async function POST(req: Request) {
   try {
@@ -15,8 +16,32 @@ export async function POST(req: Request) {
     const { challengeId, selectedOptionId, unitId } = body;
 
     if (!challengeId || !selectedOptionId || !unitId) {
-      return new NextResponse("Missing required fields", { status: 400 });
+      return new NextResponse(
+        JSON.stringify({ error: "Missing required fields" }), 
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
     }
+
+    // Verify that the unit exists
+    const unit = await db.query.units.findFirst({
+      where: eq(units.id, unitId)
+    });
+
+    if (!unit) {
+      console.error(`Unit with ID ${unitId} not found`);
+      return new NextResponse(
+        JSON.stringify({ error: "Invalid unit ID" }), 
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Log the values being inserted for debugging
+    console.log("Inserting wrong answer:", {
+      userId,
+      challengeId,
+      selectedOptionId,
+      unitId,
+    });
 
     await db.insert(wrongAnswers).values({
       userId,
@@ -25,7 +50,10 @@ export async function POST(req: Request) {
       unitId,
     });
 
-    return new NextResponse("OK", { status: 200 });
+    return new NextResponse(
+      JSON.stringify({ success: true }), 
+      { status: 200, headers: { 'Content-Type': 'application/json' } }
+    );
   } catch (error) {
     console.error("[WRONG_ANSWERS_POST]", error);
     return new NextResponse("Internal Error", { status: 500 });

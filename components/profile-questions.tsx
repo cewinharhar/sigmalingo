@@ -20,7 +20,7 @@ import {
 interface ProfileQuestion {
   id: number;
   question: string;
-  type: "CHOICE" | "TEXT";
+  type: "CHOICE" | "TEXT" | "MULTI_SELECT";
   options?: string[];
   order: number;
 }
@@ -69,7 +69,12 @@ export const ProfileQuestions = forwardRef<ProfileQuestionsRef>((_, ref) => {
         if (!response.ok) throw new Error("Failed to fetch answers");
         const { data } = await response.json();
         const answersMap = data.reduce((acc: Record<number, string>, curr: any) => {
-          acc[curr.questionId] = curr.answer;
+          // For multi-select answers, ensure we store the stringified array
+          if (curr.type === "MULTI_SELECT" && Array.isArray(curr.answer)) {
+            acc[curr.questionId] = JSON.stringify(curr.answer);
+          } else {
+            acc[curr.questionId] = curr.answer;
+          }
           return acc;
         }, {});
         setAnswers(answersMap);
@@ -156,7 +161,18 @@ export const ProfileQuestions = forwardRef<ProfileQuestionsRef>((_, ref) => {
                 </Button>
                 {answers[question.id] && (
                   <p className="text-sm text-muted-foreground pl-8">
-                    Your answer: {answers[question.id]}
+                    Your answer: {
+                      question.type === "MULTI_SELECT" 
+                        ? (() => {
+                            try {
+                              const parsedAnswer = JSON.parse(answers[question.id]);
+                              return Array.isArray(parsedAnswer) ? parsedAnswer.join(", ") : answers[question.id];
+                            } catch {
+                              return answers[question.id];
+                            }
+                          })()
+                        : answers[question.id]
+                    }
                   </p>
                 )}
               </div>
@@ -205,4 +221,4 @@ export const ProfileQuestions = forwardRef<ProfileQuestionsRef>((_, ref) => {
       </Dialog>
     </div>
   );
-}); 
+});
