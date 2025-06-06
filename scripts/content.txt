@@ -7,6 +7,122 @@
     "description": "Master your mindset and unlock your potential",
     "units": [
       {
+        "id": 0,
+        "title": "Unit 0: Facing the Facts",
+        "description": "Understanding the scope of men's challenges through hard data",
+        "order": 0,
+        "recommendation": {
+          "type": "tool",
+          "title": "The Man Box Report",
+          "author": "Promundo"
+        },
+        "lessons": [
+          {
+            "id": 1,
+            "title": "Lesson 0: Facing the Numbers",
+            "order": 1,
+            "quote": {
+              "author": "David Deida",
+              "text": "Awareness is the first step to change."
+            },
+            "challenges": [
+              {
+                "type": "SELECT",
+                "question": "What percentage of global suicides are committed by men?",
+                "order": 1,
+                "options": [
+                  {
+                    "text": "About 50%",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "About 75%",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "About 90%",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "About 30%",
+                    "state": "wrong"
+                  }
+                ]
+              },
+              {
+                "type": "SELECT",
+                "question": "Nearly what fraction of men experiencing mental health issues never seek support?",
+                "order": 2,
+                "options": [
+                  {
+                    "text": "About 80%",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "About 60%",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "About 40%",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "About 25%",
+                    "state": "wrong"
+                  }
+                ]
+              },
+              {
+                "type": "SELECT",
+                "question": "Approximately what percentage of men report feeling isolated on a regular basis?",
+                "order": 3,
+                "options": [
+                  {
+                    "text": "About 50%",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "About 10%",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "About 25%",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "About 5%",
+                    "state": "wrong"
+                  }
+                ]
+              },
+              {
+                "type": "SELECT",
+                "question": "Seeing these numbers, how do you feel about your own willingness to face these challenges?",
+                "order": 4,
+                "options": [
+                  {
+                    "text": "I feel helpless",
+                    "state": "work_in_progress"
+                  },
+                  {
+                    "text": "I feel motivated to change",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "These stats don’t apply to me",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "This is overwhelming, but I need to act",
+                    "state": "work_in_progress"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },      
+      {
         "id": 1,
         "title": "Unit 1: Taking Responsibility",
         "description": "The foundation of all growth - owning your life completely",
@@ -646,6 +762,133 @@
     "description": "Build resilience and emotional intelligence",
     "units": [
       {
+        "id": 0,
+        "title": "Unit 0: The Urgency of Men's Mental Health",
+        "description": "Understand the alarming statistics behind men's mental health crisis",
+        "order": 0,
+        "recommendation": {
+          "type": "app",
+          "title": "Headspace",
+          "author": "Headspace, Inc."
+        },
+        "lessons": [
+          {
+            "id": 1,
+            "title": "Lesson 1: The State of Men's Mental Health",
+            "order": 1,
+            "quote": {
+              "author": "Warren Farrell",
+              "text": "Men’s mental health is a silent crisis—these numbers are the alarm bell we keep snoozing."
+            },
+            "challenges": [
+              {
+                "type": "SELECT",
+                "question": "Globally, what percentage of suicides are committed by men?",
+                "order": 1,
+                "options": [
+                  {
+                    "text": "About 50%",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "About 75%",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "About 60%",
+                    "state": "work_in_progress"
+                  },
+                  {
+                    "text": "About 90%",
+                    "state": "wrong"
+                  }
+                ]
+              },
+              {
+                "type": "SELECT",
+                "question": "In the U.S., suicide is the _______ leading cause of death for men ages 15–44.",
+                "order": 2,
+                "options": [
+                  {
+                    "text": "Fourth",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "First",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "Tenth",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "Seventh",
+                    "state": "work_in_progress"
+                  }
+                ]
+              },
+              {
+                "type": "SELECT",
+                "question": "What fraction of men with mental health issues receive adequate treatment?",
+                "order": 3,
+                "options": [
+                  {
+                    "text": "About 1 in 5",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "About 1 in 10",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "About 1 in 3",
+                    "state": "work_in_progress"
+                  },
+                  {
+                    "text": "About 1 in 4",
+                    "state": "wrong"
+                  }
+                ]
+              },
+              {
+                "type": "SELECT",
+                "question": "True or False: Men are three times more likely than women to die by suicide.",
+                "order": 4,
+                "options": [
+                  {
+                    "text": "True",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "False",
+                    "state": "wrong"
+                  }
+                ]
+              },
+              {
+                "type": "SELECT",
+                "question": "Seeing these numbers, how compelled do you feel to take your mental health seriously?",
+                "order": 5,
+                "options": [
+                  {
+                    "text": "Not compelled",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "Somewhat compelled",
+                    "state": "work_in_progress"
+                  },
+                  {
+                    "text": "Very compelled",
+                    "state": "correct"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },      
+      {
         "id": 1,
         "title": "Unit 1: Understanding Your Inner World",
         "description": "Navigate emotions without being controlled by them",
@@ -1103,6 +1346,114 @@
     "description": "Optimize your body and energy levels",
     "units": [
       {
+        "id": 0,
+        "title": "Unit 0: The Stakes of Physical Health",
+        "description": "Understand the critical statistics that show why men’s physical health demands attention",
+        "order": 0,
+        "recommendation": {
+          "type": "app",
+          "title": "Statista",
+          "author": "Statista GmbH"
+        },
+        "lessons": [
+          {
+            "id": 1,
+            "title": "Lesson 1: Why Men’s Physical Health Matters",
+            "order": 1,
+            "quote": {
+              "author": "Warren Farrell",
+              "text": "Men ignore pain until they can’t ignore it—and by then it’s often too late."
+            },
+            "challenges": [
+              {
+                "type": "SELECT",
+                "question": "On average, how many years shorter is a man’s life expectancy compared to a woman’s in most Western countries? (Select one)",
+                "order": 1,
+                "options": [
+                  {
+                    "text": "7 years",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "5 years",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "10 years",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "3 years",
+                    "state": "wrong"
+                  }
+                ]
+              },
+              {
+                "type": "SELECT",
+                "question": "Approximately what percentage of men worldwide are classified as overweight or obese? (Select one)",
+                "order": 2,
+                "options": [
+                  {
+                    "text": "55%",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "40%",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "15%",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "25%",
+                    "state": "wrong"
+                  }
+                ]
+              },
+              {
+                "type": "SELECT",
+                "question": "Cardiovascular disease accounts for roughly what percentage of male deaths globally? (Select one)",
+                "order": 3,
+                "options": [
+                  {
+                    "text": "50%",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "30%",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "20%",
+                    "state": "wrong"
+                  }
+                ]
+              },
+              {
+                "type": "SELECT",
+                "question": "Seeing these numbers: do you feel compelled to act now or do you brush them off? (Select one)",
+                "order": 4,
+                "options": [
+                  {
+                    "text": "I feel motivated to change",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "I’m unsure if it applies to me",
+                    "state": "work_in_progress"
+                  },
+                  {
+                    "text": "I don’t think these stats affect my life",
+                    "state": "wrong"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },      
+      {
         "id": 1,
         "title": "Unit 1: Your Body as Your Temple",
         "description": "Respect and develop your physical vessel",
@@ -1386,6 +1737,141 @@
     "imageSrc": "/digitalWellness_sigma.png",
     "description": "Master technology and digital habits",
     "units": [
+      {
+        "id": 0,
+        "title": "Unit 0: The Scope of Digital Challenges",
+        "description": "Understanding the scale and impact of digital issues on men",
+        "order": 0,
+        "recommendation": {
+          "type": "report",
+          "title": "Digital Addiction and Its Impact: Pew Research Center",
+          "author": "Pew Research Center"
+        },
+        "lessons": [
+          {
+            "id": 1,
+            "title": "Lesson 1: Cold Hard Facts",
+            "order": 1,
+            "quote": {
+              "author": "Jordan B. Peterson",
+              "text": "If you don’t measure, you can’t improve."
+            },
+            "challenges": [
+              {
+                "type": "SELECT",
+                "question": "What percentage of men aged 18–35 spend more than 3 hours daily on social media?",
+                "order": 1,
+                "options": [
+                  {
+                    "text": "30%",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "50%",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "70%",
+                    "state": "work_in_progress"
+                  },
+                  {
+                    "text": "10%",
+                    "state": "wrong"
+                  }
+                ]
+              },
+              {
+                "type": "SELECT",
+                "question": "What proportion of men report that porn use has negatively affected their relationships?",
+                "order": 2,
+                "options": [
+                  {
+                    "text": "25%",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "60%",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "40%",
+                    "state": "work_in_progress"
+                  },
+                  {
+                    "text": "80%",
+                    "state": "wrong"
+                  }
+                ]
+              },
+              {
+                "type": "SELECT",
+                "question": "According to studies, what percentage of men self-identify as experiencing digital addiction?",
+                "order": 3,
+                "options": [
+                  {
+                    "text": "15%",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "5%",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "25%",
+                    "state": "work_in_progress"
+                  }
+                ]
+              },
+              {
+                "type": "SELECT",
+                "question": "How many men under 40 who attempted a no-porn challenge relapsed within a week?",
+                "order": 4,
+                "options": [
+                  {
+                    "text": "20%",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "65%",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "80%",
+                    "state": "work_in_progress"
+                  },
+                  {
+                    "text": "35%",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "50%",
+                    "state": "work_in_progress"
+                  }
+                ]
+              },
+              {
+                "type": "SELECT",
+                "question": "What percentage of male internet users say they regret the time spent online when asked?",
+                "order": 5,
+                "options": [
+                  {
+                    "text": "55%",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "30%",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "75%",
+                    "state": "work_in_progress"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },      
       {
         "id": 1,
         "title": "Unit 1: Breaking Digital Chains",
@@ -2274,6 +2760,157 @@
     "description": "Develop essential life management skills",
     "units": [
       {
+        "id": 0,
+        "title": "Unit 0: The State of Men Today",
+        "description": "Understand the critical issues affecting men through hard-hitting statistics.",
+        "order": 0,
+        "recommendation": {
+          "type": "book",
+          "title": "Guyland: The Perilous World Where Boys Become Men",
+          "author": "Michael Kimmel"
+        },
+        "lessons": [
+          {
+            "id": 1,
+            "title": "Lesson 0: Stark Realities",
+            "order": 1,
+            "quote": {
+              "author": "Richard Rohr",
+              "text": "Too many men live lives of quiet desperation, and the statistics show we’re on the brink of a silent epidemic."
+            },
+            "challenges": [
+              {
+                "type": "SELECT",
+                "question": "Men are approximately how many times more likely to die by suicide compared to women globally?",
+                "order": 1,
+                "options": [
+                  {
+                    "text": "Two times more likely",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "Three times more likely",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "Five times more likely",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "I know it’s high but not sure how much",
+                    "state": "work_in_progress"
+                  },
+                  {
+                    "text": "I don’t believe these numbers",
+                    "state": "wrong"
+                  }
+                ]
+              },
+              {
+                "type": "SELECT",
+                "question": "On average, how many years shorter is a man’s life expectancy compared to a woman’s in developed countries?",
+                "order": 2,
+                "options": [
+                  {
+                    "text": "About 2 years shorter",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "I have no clue, but it worries me",
+                    "state": "work_in_progress"
+                  },
+                  {
+                    "text": "About 5 years shorter",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "About 8 years shorter",
+                    "state": "wrong"
+                  }
+                ]
+              },
+              {
+                "type": "SELECT",
+                "question": "Approximately what percentage of the prison population is male?",
+                "order": 3,
+                "options": [
+                  {
+                    "text": "Around 80%",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "I’m aware it’s high but not sure exactly",
+                    "state": "work_in_progress"
+                  },
+                  {
+                    "text": "Around 95%",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "Around 50%",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "I don’t care to know",
+                    "state": "wrong"
+                  }
+                ]
+              },
+              {
+                "type": "SELECT",
+                "question": "Roughly what percentage of men believe that admitting mental health issues is a sign of weakness?",
+                "order": 4,
+                "options": [
+                  {
+                    "text": "I know it’s significant but not exact",
+                    "state": "work_in_progress"
+                  },
+                  {
+                    "text": "About 30%",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "About 60%",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "I refuse to think about it",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "About 80%",
+                    "state": "wrong"
+                  }
+                ]
+              },
+              {
+                "type": "SELECT",
+                "question": "What percent of men report feeling lonely often or always?",
+                "order": 5,
+                "options": [
+                  {
+                    "text": "About 60%",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "About 40%",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "I feel lonely but didn’t know stats",
+                    "state": "work_in_progress"
+                  },
+                  {
+                    "text": "About 20%",
+                    "state": "wrong"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },      
+      {
         "id": 1,
         "title": "Unit 1: Financial Mastery",
         "description": "Build wealth and financial independence",
@@ -2515,6 +3152,122 @@
     "imageSrc": "/relationships_sigma.png",
     "description": "Build and maintain healthy relationships",
     "units": [
+      {
+        "id": 0,
+        "title": "Unit 0: The Stakes of Disconnection",
+        "description": "Understand how neglecting relationships impacts men’s well-being in society.",
+        "order": 0,
+        "recommendation": {
+          "type": "book",
+          "title": "The Mask of Masculinity",
+          "author": "Lewis Howes"
+        },
+        "lessons": [
+          {
+            "id": 1,
+            "title": "Lesson 1: The Cost of Isolation",
+            "order": 1,
+            "quote": {
+              "author": "Carl Jung",
+              "text": "Loneliness does not come from having no people about one, but from being unable to communicate the things that seem important to oneself."
+            },
+            "challenges": [
+              {
+                "type": "SELECT",
+                "question": "What percentage of men report feeling lonely regularly?",
+                "order": 1,
+                "options": [
+                  {
+                    "text": "30%",
+                    "state": "work_in_progress"
+                  },
+                  {
+                    "text": "50%",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "10%",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "70%",
+                    "state": "wrong"
+                  }
+                ]
+              },
+              {
+                "type": "SELECT",
+                "question": "Men die by suicide at nearly what ratio compared to women in many countries?",
+                "order": 2,
+                "options": [
+                  {
+                    "text": "Equal rates",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "4 times more",
+                    "state": "work_in_progress"
+                  },
+                  {
+                    "text": "3 to 1",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "2 times more",
+                    "state": "wrong"
+                  }
+                ]
+              },
+              {
+                "type": "SELECT",
+                "question": "When men lack close friendships, their risk of premature death increases by roughly what percent?",
+                "order": 3,
+                "options": [
+                  {
+                    "text": "20%",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "50%",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "70%",
+                    "state": "wrong"
+                  },
+                  {
+                    "text": "10%",
+                    "state": "work_in_progress"
+                  }
+                ]
+              },
+              {
+                "type": "SELECT",
+                "question": "Reflecting on these numbers, how concerned are you about the impact of isolation on your life?",
+                "order": 4,
+                "options": [
+                  {
+                    "text": "Completely unaware until now",
+                    "state": "work_in_progress"
+                  },
+                  {
+                    "text": "Aware but thought it was less serious",
+                    "state": "work_in_progress"
+                  },
+                  {
+                    "text": "Concerned and ready to change",
+                    "state": "correct"
+                  },
+                  {
+                    "text": "Indifferent; stats don't affect me",
+                    "state": "wrong"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
       {
         "id": 1,
         "title": "Unit 1: Authentic Connection",
