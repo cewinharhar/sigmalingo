@@ -27,7 +27,7 @@ export default function RootLayout({
     <ClerkProvider
       appearance={{
         layout: {
-          logoImageUrl: "/favicon.ico",
+          logoImageUrl: "/mascot.ico",
         },
         variables: {
           colorPrimary: "#22C55E",

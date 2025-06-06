@@ -1,22 +1,22 @@
 import type { Metadata } from "next";
 
 export const siteConfig: Metadata = {
-  title: "Lingo",
+  title: "Sigmalingo",
   description:
-    "Interactive platform for language learning with lessons, quizzes, and progress tracking.",
+    "Embrace healthy masculinity bit by bit",
   keywords: [
     "reactjs",
     "nextjs",
     "vercel",
     "react",
-    "duolingo-clone",
-    "learn-language",
+    "sigma",
+    "masculinity",
     "shadcn",
     "shadcn-ui",
     "radix-ui",
     "cn",
     "clsx",
-    "lingo",
+    "mental-health",
     "postgresql",
     "sonner",
     "drizzle",
@@ -47,5 +47,5 @@ export const siteConfig: Metadata = {
 
 export const links = {
   sourceCode: "",
-  email: "kevinmoyar@gmail.com",
+  email: "kevin.yar@outlook.com",
 } as const;
