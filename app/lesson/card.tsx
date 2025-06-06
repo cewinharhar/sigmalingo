@@ -16,7 +16,7 @@ type CardProps = {
   shortcut: string;
   selected?: boolean;
   onClick: () => void;
-  status?: "correct" | "wrong" | "none";
+  status?: "correct" | "wrong" | "none" | "work_in_progress";
   disabled?: boolean;
   type: (typeof challenges.$inferSelect)["type"];
 };
@@ -49,15 +49,14 @@ export const Card = ({
       onClick={handleClick}
       className={cn(
         "h-full cursor-pointer rounded-xl border-2 border-b-4 p-4 hover:bg-black/5 active:border-b-2 lg:p-6",
-        selected && "border-sky-300 bg-sky-100 hover:bg-sky-100",
-        selected &&
-          status === "correct" &&
-          "border-green-300 bg-green-100 hover:bg-green-100",
-        selected &&
-          status === "wrong" &&
-          "border-rose-300 bg-rose-100 hover:bg-rose-100",
-        disabled && "pointer-events-none hover:bg-white",
-        type === "ASSIST" && "w-full lg:p-3"
+        {
+          "border-black/10": !selected && status === "none",
+          "bg-black/5 border-black/20": selected && status === "none",
+          "border-green-500 bg-green-100": selected && status === "correct",
+          "border-rose-500 bg-rose-100": selected && status === "wrong",
+          "border-orange-500 bg-orange-100": selected && status === "work_in_progress",
+          "hover:bg-transparent cursor-not-allowed": disabled,
+        }
       )}
     >
       {audio}

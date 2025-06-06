@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
-
+import { useState, useTransition, useEffect } from "react";
+import { AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Confetti from "react-confetti";
@@ -15,6 +15,7 @@ import { challengeOptions, challenges, userSubscription } from "@/db/schema";
 import { useHeartsModal } from "@/store/use-hearts-modal";
 import { usePracticeModal } from "@/store/use-practice-modal";
 import { useFeedbackModal } from "@/store/use-feedback-modal";
+import { QuoteCard } from "@/components/quote-card";
 
 import { Challenge } from "./challenge";
 import { Footer } from "./footer";
@@ -36,6 +37,10 @@ type QuizProps = {
         isActive: boolean;
       })
     | null;
+  lessonQuote?: {
+    text: string;
+    author: string;
+  };
 };
 
 export const Quiz = ({
@@ -45,6 +50,7 @@ export const Quiz = ({
   initialLessonChallenges,
   userSubscription,
   unitId,
+  lessonQuote,
 }: QuizProps) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [correctAudio, _c, correctControls] = useAudio({ src: "/correct.wav" });
@@ -83,7 +89,18 @@ export const Quiz = ({
   });
 
   const [selectedOption, setSelectedOption] = useState<number>();
-  const [status, setStatus] = useState<"none" | "wrong" | "correct">("none");
+  const [status, setStatus] = useState<"none" | "wrong" | "correct" | "work_in_progress">("none");
+
+  const [showQuote, setShowQuote] = useState(!!lessonQuote);
+
+  useEffect(() => {
+    if (showQuote) {
+      const timer = setTimeout(() => {
+        setShowQuote(false);
+      }, 5000); // Show quote for 5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [showQuote]);
 
   const challenge = challenges[activeIndex];
   const options = challenge?.challengeOptions ?? [];
@@ -107,18 +124,17 @@ export const Quiz = ({
       return;
     }
 
-    if (status === "correct") {
+    if (status === "correct" || status === "work_in_progress") {
       onNext();
       setStatus("none");
       setSelectedOption(undefined);
       return;
     }
 
-    const correctOption = options.find((option) => option.correct);
-
-    if (!correctOption) return;
-
-    if (correctOption.id === selectedOption) {
+    // Check the state of the selected option
+    const selectedOptionDetails = options.find((opt) => opt.id === selectedOption);
+    
+    if (selectedOptionDetails?.state === "work_in_progress" || selectedOptionDetails?.state === "correct") {
       startTransition(() => {
         upsertChallengeProgress(challenge.id)
           .then((response) => {
@@ -127,8 +143,14 @@ export const Quiz = ({
               return;
             }
 
-            void correctControls.play();
-            setStatus("correct");
+            if (selectedOptionDetails.state === "work_in_progress") {
+              setStatus("work_in_progress");
+              void incorrectControls.play();
+            } else {
+              void correctControls.play();
+              setStatus("correct");
+            }
+            
             const newPercentage = Math.min(percentage + 100 / challenges.length, 100);
             setPercentage(newPercentage);
 
@@ -200,6 +222,16 @@ export const Quiz = ({
       });
     }
   };
+
+  if (showQuote && lessonQuote) {
+    return (
+      <div className="flex-1 flex items-center justify-center p-6">
+        <AnimatePresence>
+          <QuoteCard quote={lessonQuote} />
+        </AnimatePresence>
+      </div>
+    );
+  }
 
   if (!challenge) {
     return (

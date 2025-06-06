@@ -1,4 +1,4 @@
-import { CheckCircle, XCircle } from "lucide-react";
+import { CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import { useKey, useMedia } from "react-use";
 
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 type FooterProps = {
   onCheck: () => void;
-  status: "correct" | "wrong" | "none" | "completed";
+  status: "correct" | "wrong" | "none" | "completed" | "work_in_progress";
   disabled?: boolean;
   lessonId?: number;
 };
@@ -25,7 +25,8 @@ export const Footer = ({
       className={cn(
         "h-[100px] border-t-2 lg:h-[140px]",
         status === "correct" && "border-transparent bg-green-100",
-        status === "wrong" && "border-transparent bg-rose-100"
+        status === "wrong" && "border-transparent bg-rose-100",
+        status === "work_in_progress" && "border-transparent bg-orange-100"
       )}
     >
       <div className="mx-auto flex h-full max-w-[1140px] items-center justify-between px-6 lg:px-10">
@@ -43,6 +44,13 @@ export const Footer = ({
           </div>
         )}
 
+        {status === "work_in_progress" && (
+          <div className="flex items-center text-base font-bold text-orange-500 lg:text-2xl">
+            <AlertCircle className="mr-4 h-6 w-6 lg:h-10 lg:w-10" />
+            work in progress...
+          </div>
+        )}
+
         {status === "completed" && (
           <Button
             variant="default"
@@ -56,15 +64,14 @@ export const Footer = ({
         <Button
           disabled={disabled}
           aria-disabled={disabled}
-          className="ml-auto"
-          onClick={onCheck}
           size={isMobile ? "sm" : "lg"}
-          variant={status === "wrong" ? "danger" : "secondary"}
+          onClick={onCheck}
         >
-          {status === "none" && "Check"}
-          {status === "correct" && "Next"}
-          {status === "wrong" && "Retry"}
-          {status === "completed" && "Continue"}
+          {status === "completed"
+            ? "Return to course"
+            : status === "wrong"
+            ? "Try again"
+            : "Check"}
         </Button>
       </div>
     </footer>

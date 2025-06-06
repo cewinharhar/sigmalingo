@@ -12,6 +12,8 @@ import {
 
 import { MAX_HEARTS } from "@/constants";
 
+export const answerStateEnum = pgEnum("answer_state", ["correct", "work_in_progress", "wrong"]);
+
 export const courses = pgTable("courses", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
@@ -33,6 +35,9 @@ export const units = pgTable("units", {
     })
     .notNull(),
   order: integer("order").notNull(),
+  recommendationType: text("recommendation_type"),
+  recommendationTitle: text("recommendation_title"),
+  recommendationAuthor: text("recommendation_author"),
 });
 
 export const unitsRelations = relations(units, ({ many, one }) => ({
@@ -52,6 +57,8 @@ export const lessons = pgTable("lessons", {
     })
     .notNull(),
   order: integer("order").notNull(),
+  quoteText: text("quote_text"),
+  quoteAuthor: text("quote_author"),
 });
 
 export const lessonsRelations = relations(lessons, ({ one, many }) => ({
@@ -93,7 +100,7 @@ export const challengeOptions = pgTable("challenge_options", {
     })
     .notNull(),
   text: text("text").notNull(),
-  correct: boolean("correct").notNull(),
+  state: answerStateEnum("state").notNull().default("wrong"),
   imageSrc: text("image_src"),
   audioSrc: text("audio_src"),
 });
@@ -201,6 +208,7 @@ export const wrongAnswers = pgTable("wrong_answers", {
   unitId: integer("unit_id")
     .notNull()
     .references(() => units.id),
+  answerState: answerStateEnum("answer_state").notNull().default("wrong"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

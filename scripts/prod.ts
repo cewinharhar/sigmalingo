@@ -67,12 +67,12 @@ const LESSON_TEMPLATES = [
 ];
 
 // Helper functions
-const createChallengeOptions = async (challengeId: number, options: { text: string; correct: boolean }[]) => {
+const createChallengeOptions = async (challengeId: number, options: { text: string; state: "correct" | "work_in_progress" | "wrong" }[]) => {
   await db.insert(schema.challengeOptions).values(
     options.map(option => ({
       challengeId,
       text: option.text,
-      correct: option.correct
+      state: option.state
     }))
   );
 };
@@ -98,7 +98,9 @@ const createLessons = async (unitId: number, lessons: Lesson[]) => {
       .values({
         unitId,
         title: lesson.title,
-        order: lesson.order
+        order: lesson.order,
+        quoteText: lesson.quote?.text || null,
+        quoteAuthor: lesson.quote?.author || null
       })
       .returning();
 
@@ -113,7 +115,10 @@ const createUnits = async (courseId: number, units: Unit[]) => {
         courseId,
         title: unit.title,
         description: unit.description,
-        order: unit.order
+        order: unit.order,
+        recommendationType: unit.recommendation?.type || null,
+        recommendationTitle: unit.recommendation?.title || null,
+        recommendationAuthor: unit.recommendation?.author || null
       })
       .returning();
 
@@ -150,9 +155,9 @@ const createDefaultContent = async (courseId: number, courseTitle: string) => {
           question: `What's the foundation of ${courseTitle.toLowerCase()}?`,
           order: 1,
           options: [
-            { text: "Understanding and awareness", correct: true },
-            { text: "Setting ambitious goals", correct: false },
-            { text: "Finding motivation", correct: false }
+            { text: "Understanding and awareness", state: "correct" },
+            { text: "Setting ambitious goals", state: "wrong" },
+            { text: "Finding motivation", state: "wrong" }
           ]
         },
         {
@@ -160,9 +165,9 @@ const createDefaultContent = async (courseId: number, courseTitle: string) => {
           question: `What's the most effective way to improve ${courseTitle.toLowerCase()}?`,
           order: 2,
           options: [
-            { text: "Consistent practice and dedication", correct: true },
-            { text: "Quick fixes and shortcuts", correct: false },
-            { text: "Waiting for inspiration", correct: false }
+            { text: "Consistent practice and dedication", state: "correct" },
+            { text: "Quick fixes and shortcuts", state: "wrong" },
+            { text: "Waiting for inspiration", state: "wrong" }
           ]
         }
       ];

@@ -22,6 +22,15 @@ const LessonPage = async () => {
       lesson.challenges.length) *
     100;
 
+  // Get quote data from the lesson
+  const quote =
+    lesson.quoteText && lesson.quoteAuthor
+      ? {
+          text: lesson.quoteText,
+          author: lesson.quoteAuthor,
+        }
+      : undefined;
+
   return (
     <Quiz
       initialLessonId={lesson.id}
@@ -30,6 +39,7 @@ const LessonPage = async () => {
       initialPercentage={initialPercentage}
       userSubscription={userSubscription}
       unitId={lesson.unit.id}
+      lessonQuote={quote}
     />
   );
 };

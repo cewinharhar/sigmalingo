@@ -1,8 +1,8 @@
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import db from "@/db/drizzle";
-import { wrongAnswers, userProfileAnswers, profileQuestions, unitTools, lessons, challenges, challengeProgress } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { wrongAnswers, userProfileAnswers, profileQuestions, unitTools, lessons, challenges, challengeProgress, units } from "@/db/schema";
+import { eq, and } from "drizzle-orm";
 import OpenAI from "openai";
 
 const openai = new OpenAI({
@@ -36,6 +36,11 @@ export async function POST(req: Request) {
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
+
+    // Get unit data including recommendation
+    const unitData = await db.query.units.findFirst({
+      where: eq(units.id, unitId),
+    });
 
     // Check if the unit is actually completed
     const lessonsInUnit = await db.query.lessons.findMany({
@@ -77,12 +82,29 @@ export async function POST(req: Request) {
 
     // Get user's wrong answers for this unit
     const wrongAnswersForUnit = await db.query.wrongAnswers.findMany({
-      where: eq(wrongAnswers.unitId, unitId),
+      where: and(
+        eq(wrongAnswers.unitId, unitId),
+        eq(wrongAnswers.userId, userId)
+      ),
       with: {
         challenge: true,
         selectedOption: true,
       },
     });
+
+    // Group answers by state
+    const answersGrouped = wrongAnswersForUnit.reduce((acc, answer) => {
+      const state = answer.answerState;
+      if (!acc[state]) {
+        acc[state] = [];
+      }
+      acc[state].push({
+        question: answer.challenge.question,
+        selectedAnswer: answer.selectedOption.text,
+        state: answer.answerState
+      });
+      return acc;
+    }, {} as Record<string, Array<{question: string, selectedAnswer: string, state: string}>>);
 
     // Get unit's recommended tools
     const unitToolsList = await db.query.unitTools.findMany({
@@ -90,35 +112,36 @@ export async function POST(req: Request) {
       orderBy: (tools) => [tools.order],
     });
 
-    // Prepare context for OpenAI
-    const profileContext = profileAnswers
-      .map((answer) => `${answer.question.question}: ${answer.answer}`)
-      .join("\n");
+    // Create the prompt with detailed answer information
+    const prompt = `You are an AI mentor with the love, compassion and wisdome of jordan peterson. 
+    Your task is to give feedback to a young man using an app which focuses on their growth towards healthy masculinity.
+    You will be given the user's profile answers, the unit recommendation, their wrong answers, and their work-in-progress answers:
 
-    const wrongAnswersContext = wrongAnswersForUnit
-      .map(
-        (wrong) =>
-          `Question: ${wrong.challenge.question}\nSelected Answer: ${wrong.selectedOption.text}`
-      )
-      .join("\n");
+Profile Question Answers:
+${profileAnswers.map(a => 
+  `Question: ${a.question.question}\nAnswer: ${a.answer}`
+).join('\n\n') || 'None'}
 
-    const prompt = `Based on the following user profile and their performance in this unit, provide personalized feedback and suggestions for improvement:
+Unit Recommendation:
+Title: ${unitData?.recommendationTitle || 'None'}
+Type: ${unitData?.recommendationType || 'None'}
+Author: ${unitData?.recommendationAuthor || 'None'}
 
-User Profile:
-${profileContext}
+Work in Progress Answers:
+${answersGrouped['work_in_progress']?.map(a => 
+  `Question: ${a.question}\nAnswer: ${a.selectedAnswer}`
+).join('\n\n') || 'None'}
 
-Areas of Difficulty:
-${wrongAnswersContext}
+Wrong Answers:
+${answersGrouped['wrong']?.map(a => 
+  `Question: ${a.question}\nAnswer: ${a.selectedAnswer}`
+).join('\n\n') || 'None'}
 
 Please provide:
-A very short feedback on their performance in this unit.
-Suggestions for improvement, focusing on areas where they struggled.
-Include any relevant tools or resources that could help them improve in these areas.
-Make it concise, actionable, and friendly.
-Use a friendly and encouraging tone, as if you are a supportive mentor.
-Remember to keep the feedback light-hearted and encouraging, as if you are a supportive mentor. Use a friendly and approachable tone.
-
-Keep the feedback encouraging and actionable.`;
+A reflection of the users progress based on their answers and profile. 
+Shortly summarize the user's profile answers, focusing on their strengths and areas for improvement. Keep it short. 
+Remind the user to take a breather, stand up and stretch, and drink some water. He can come back later to continue his journey
+End the reflection with a positive note, encouraging the user to continue their journey of growth. Generate the response in plain text format, without any markdown or code blocks.`;
 
     const completion = await openai.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
@@ -133,12 +156,38 @@ Keep the feedback encouraging and actionable.`;
       return new NextResponse("Failed to generate feedback", { status: 500 });
     }
 
+    // Check if this was the last unit in the course
+    const unit = await db.query.units.findFirst({
+      where: eq(units.id, unitId),
+      with: {
+        course: {
+          with: {
+            units: true
+          }
+        }
+      }
+    });
+
+    const isLastUnit = unit?.course?.units.every(u => 
+      u.id === unitId || u.order < unit.order
+    );
+
+    const courseBadge = isLastUnit ? {
+      title: unit?.course?.title || "Course Completed",
+      description: "Congratulations on completing this course!",
+      type: "completion"
+    } : null;
+
     return NextResponse.json({ 
       feedback,
-      tools: unitToolsList 
+      tools: unitToolsList,
+      workInProgressAnswers: answersGrouped['work_in_progress'] || [],
+      wrongAnswers: answersGrouped['wrong'] || [],
+      badge: courseBadge
     });
+
   } catch (error) {
     console.error("[UNIT_FEEDBACK_POST]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
-} 
+}

@@ -1,7 +1,4 @@
-// scripts/types.ts
-import type { CourseContent } from './types';
 
-export const COURSE_CONTENT: Record<string, CourseContent> = {
 
   "Self Growth": {
     "id": 1,
@@ -3186,7 +3183,3 @@ export const COURSE_CONTENT: Record<string, CourseContent> = {
       }
     ]
   }
-
-
-
-};

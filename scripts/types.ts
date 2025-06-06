@@ -2,7 +2,7 @@ export type ChallengeType = "SELECT" | "ASSIST";
 
 export type ChallengeOption = {
   text: string;
-  correct: boolean;
+  state: "correct" | "work_in_progress" | "wrong";
 };
 
 export type ChallengeTemplate = {
@@ -12,19 +12,32 @@ export type ChallengeTemplate = {
   options: ChallengeOption[];
 };
 
+export type Quote = {
+  author: string;
+  text: string;
+};
+
+export type Recommendation = {
+  type: string;
+  title: string;
+  author: string;
+};
+
 export type Lesson = {
   id: number;
   title: string;
-  challenges: ChallengeTemplate[];
   order: number;
+  quote: Quote;
+  challenges: ChallengeTemplate[];
 };
 
 export type Unit = {
   id: number;
   title: string;
   description: string;
-  lessons: Lesson[];
   order: number;
+  recommendation: Recommendation;
+  lessons: Lesson[];
 };
 
 export type CourseContent = {
@@ -33,4 +46,4 @@ export type CourseContent = {
   imageSrc: string;
   description: string;
   units: Unit[];
-}; 
+};

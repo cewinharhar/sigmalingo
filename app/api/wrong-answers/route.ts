@@ -1,8 +1,8 @@
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import db from "@/db/drizzle";
-import { wrongAnswers, units } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { wrongAnswers, units, challengeOptions } from "@/db/schema";
+import { and, eq } from "drizzle-orm";
 
 export async function POST(req: Request) {
   try {
@@ -35,20 +35,30 @@ export async function POST(req: Request) {
       );
     }
 
-    // Log the values being inserted for debugging
-    console.log("Inserting wrong answer:", {
-      userId,
-      challengeId,
-      selectedOptionId,
-      unitId,
+    // Get the selected option's state
+    const selectedOption = await db.query.challengeOptions.findFirst({
+      where: eq(challengeOptions.id, selectedOptionId)
     });
 
-    await db.insert(wrongAnswers).values({
-      userId,
-      challengeId,
-      selectedOptionId,
-      unitId,
-    });
+    // Only track wrong and work_in_progress answers
+    if (selectedOption && selectedOption.state !== "correct") {
+      // Log the values being inserted for debugging
+      console.log("Inserting wrong answer:", {
+        userId,
+        challengeId,
+        selectedOptionId,
+        unitId,
+        state: selectedOption.state // Log the state being inserted
+      });
+
+      await db.insert(wrongAnswers).values({
+        userId,
+        challengeId,
+        selectedOptionId,
+        unitId,
+        answerState: selectedOption.state // Add this field to track the state
+      });
+    }
 
     return new NextResponse(
       JSON.stringify({ success: true }), 
@@ -58,4 +68,4 @@ export async function POST(req: Request) {
     console.error("[WRONG_ANSWERS_POST]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
-} 
+}
