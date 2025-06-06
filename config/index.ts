@@ -11,6 +11,7 @@ export const siteConfig: Metadata = {
     "react",
     "sigma",
     "masculinity",
+    "man",
     "shadcn",
     "shadcn-ui",
     "radix-ui",
