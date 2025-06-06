@@ -4,6 +4,8 @@ import db from "@/db/drizzle";
 import { profileQuestions, userProfileAnswers } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const { userId } = auth();

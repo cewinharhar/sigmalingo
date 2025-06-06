@@ -46,7 +46,7 @@ export const ResourceView = ({ resource }: ResourceViewProps) => {
               )}
             </div>
             <Button
-              variant="outline"
+              variant="default"
               size="sm"
               onClick={() => window.open(resource.url, "_blank")}
               className="flex items-center gap-2"
@@ -73,7 +73,7 @@ export const ResourceView = ({ resource }: ResourceViewProps) => {
               )}
             </div>
             <Button
-              variant="outline"
+              variant="default"
               size="sm"
               onClick={() => window.open(resource.url, "_blank")}
               className="flex items-center gap-2"
@@ -100,7 +100,7 @@ export const ResourceView = ({ resource }: ResourceViewProps) => {
               )}
             </div>
             <Button
-              variant="outline"
+              variant="default"
               size="sm"
               onClick={() => window.open(resource.url, "_blank")}
               className="flex items-center gap-2"

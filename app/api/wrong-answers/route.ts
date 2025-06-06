@@ -4,6 +4,8 @@ import db from "@/db/drizzle";
 import { wrongAnswers, units, challengeOptions } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   try {
     const { userId } = auth();

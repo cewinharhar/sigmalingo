@@ -4,6 +4,8 @@ import db from "@/db/drizzle";
 import { profileQuestions, userProfileAnswers } from "@/db/schema";
 import { eq, asc } from "drizzle-orm";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const { userId } = auth();
@@ -71,4 +73,4 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   }
-} 
+}
