@@ -117,6 +117,10 @@ export async function POST(req: Request) {
     Your task is to give feedback to a young man using an app which focuses on their growth towards healthy masculinity.
     You will be given the user's profile answers, the unit recommendation, their wrong answers, and their work-in-progress answers:
 
+Unit Information:
+Title: ${unitData?.title || 'Unknown Unit'}
+Description: ${unitData?.description || 'No description available'}
+
 Profile Question Answers:
 ${profileAnswers.map(a => 
   `Question: ${a.question.question}\nAnswer: ${a.answer}`
@@ -138,9 +142,11 @@ ${answersGrouped['wrong']?.map(a =>
 ).join('\n\n') || 'None'}
 
 Please provide:
-A reflection of the users progress based on their answers and profile. 
-Shortly summarize the user's profile answers, focusing on their strengths and areas for improvement. Keep it short. 
-Remind the user to take a breather, stand up and stretch, and drink some water. He can come back later to continue his journey
+A reflection of the users progress based on their answers and profile with focus on the current unit. 
+Shortly summarize the user's question answers, focusing on their strengths and areas for improvement. Keep it short. 
+You should try to be as personal as possible to make the user feel seen and understood.
+Remind the user to take a breather, stand up and stretch, and drink some water. He can come back later to continue his journey.
+Important: If this its unit 0 (statistics), ensure to mention that these numbers shouldnt scare the user but rather make them aware of their current state.
 End the reflection with a positive note, encouraging the user to continue their journey of growth. Generate the response in plain text format, without any markdown or code blocks.`;
 
     const completion = await openai.chat.completions.create({
@@ -156,34 +162,11 @@ End the reflection with a positive note, encouraging the user to continue their 
       return new NextResponse("Failed to generate feedback", { status: 500 });
     }
 
-    // Check if this was the last unit in the course
-    const unit = await db.query.units.findFirst({
-      where: eq(units.id, unitId),
-      with: {
-        course: {
-          with: {
-            units: true
-          }
-        }
-      }
-    });
-
-    const isLastUnit = unit?.course?.units.every(u => 
-      u.id === unitId || u.order < unit.order
-    );
-
-    const courseBadge = isLastUnit ? {
-      title: unit?.course?.title || "Course Completed",
-      description: "Congratulations on completing this course!",
-      type: "completion"
-    } : null;
-
     return NextResponse.json({ 
       feedback,
       tools: unitToolsList,
       workInProgressAnswers: answersGrouped['work_in_progress'] || [],
-      wrongAnswers: answersGrouped['wrong'] || [],
-      badge: courseBadge
+      wrongAnswers: answersGrouped['wrong'] || []
     });
 
   } catch (error) {

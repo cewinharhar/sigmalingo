@@ -234,6 +234,13 @@ export const Quiz = ({
   }
 
   if (!challenge) {
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        router.push("/learn");
+      }, 2000);
+      return () => clearTimeout(timer);
+    }, [router]);
+
     return (
       <>
         {finishAudio}

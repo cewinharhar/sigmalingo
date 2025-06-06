@@ -19,102 +19,101 @@ interface ProfileQuestion {
 
 const questions: ProfileQuestion[] = [
   {
+    question: "How can I call you?",
+    type: "TEXT",
+    order: 0,
+  },
+  {
     question: "Please enter your age",
     type: "TEXT",
     order: 1,
   },
   {
-    question: "What best describes your current professional status?",
+    question: "What best describes your current relationship/family status?",
     type: "CHOICE",
     options: [
-      "Full-time Professional",
-      "Part-time Professional",
-      "Entrepreneur/Business Owner",
-      "Student/Academic",
-      "Career Transition",
+      "Single",
+      "In a committed relationship",
+      "Married/Partnered",
+      "Separated/Divorced",
+      "Parent/Guardian",
       "Other"
     ],
     order: 2,
   },
   {
-    question: "Which professional and personal objectives are you pursuing? (Select all that apply)",
+    question: "Which areas of your personal life do you feel need the most attention right now? (Select all that apply)",
     type: "MULTI_SELECT",
     options: [
-      "Career Advancement",
-      "Financial Independence",
-      "Professional Network Development",
-      "Leadership Skills",
-      "Work-Life Integration",
-      "Personal Growth",
-      "Professional Education",
-      "Business Development",
-      "Industry Expertise",
-      "Global Perspective"
+      "Emotional/romantic relationships",
+      "Family dynamics",
+      "Physical health/fitness",
+      "Mental well-being",
+      "Work/life balance",
+      "Pursuing a personal passion/hobby",
+      "Financial stability",
+      "Spiritual or inner growth"
     ],
     order: 3,
   },
   {
-    question: "Which areas would you like to develop further professionally?",
-    type: "MULTI_SELECT",
+    question: "How many days per week do you currently exercise or move your body intentionally?",
+    type: "CHOICE",
     options: [
-      "Strategic Planning",
-      "Communication Skills",
-      "Team Leadership",
-      "Technical Expertise",
-      "Project Management",
-      "Business Acumen",
-      "Innovation/Creativity",
-      "Cross-cultural Competence",
-      "Digital Literacy",
-      "Time Management"
+      "0 days",
+      "1–2 days",
+      "3–4 days",
+      "5 or more days"
     ],
     order: 4,
   },
   {
-    question: "What drives your professional development goals?",
-    type: "TEXT",
+    question: "Which passions or hobbies energize you the most? (Select all that apply)",
+    type: "MULTI_SELECT",
+    options: [
+      "Creative arts (music, writing, painting)",
+      "Sports or outdoor adventure",
+      "Reading or learning new topics",
+      "Building or DIY projects",
+      "Cooking or nutrition",
+      "Meditation or mindfulness practices",
+      "Volunteering/community work",
+      "Other"
+    ],
     order: 5,
   },
   {
-    question: "How much time can you allocate to professional development weekly?",
+    question: "How would you describe your main source of stress right now?",
     type: "CHOICE",
     options: [
-      "1-2 hours",
-      "3-5 hours",
-      "6-8 hours",
-      "More than 8 hours"
+      "Work or career pressures",
+      "Family or relationship issues",
+      "Health or fitness concerns",
+      "Lack of direction/purpose",
+      "Financial worries",
+      "I feel generally calm"
     ],
     order: 6,
   },
   {
-    question: "What is your preferred method of professional learning?",
-    type: "CHOICE",
+    question: "What do you hope to achieve by using this app? (Select all that apply)",
+    type: "MULTI_SELECT",
     options: [
-      "Visual/Diagrammatic Learning",
-      "Interactive/Hands-on Practice",
-      "Text-based/Documentation",
-      "Audio/Discussion-based",
-      "Mixed Methods"
+      "Improve my confidence",
+      "Strengthen my relationships",
+      "Build healthier habits",
+      "Discover or deepen my passions",
+      "Find greater life balance",
+      "Develop emotional resilience",
+      "Clarify my goals and purpose"
     ],
     order: 7,
   },
   {
-    question: "Which industry sectors interest you most? (Select all that apply)",
-    type: "MULTI_SELECT",
-    options: [
-      "Technology/Software",
-      "Business/Finance",
-      "Healthcare/Life Sciences",
-      "Engineering/Manufacturing",
-      "Creative Industries",
-      "Education/Research",
-      "Environmental/Sustainability",
-      "Consulting/Professional Services",
-      "Public Sector/Government",
-      "Entrepreneurship/Startups"
-    ],
+    question: "Is there any other personal context you'd like us to know (briefly)?",
+    type: "TEXT",
     order: 8,
-  },
+  }
 ];
 
 async function seed() {

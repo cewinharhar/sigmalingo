@@ -502,7 +502,7 @@ export const COURSE_CONTENT: Record<string, CourseContent> = {
                   },
                   {
                     "text": "I found it surprisingly easy",
-                    "state": "work_in_progress"
+                    "state": "correct"
                   }
                 ]
               },
@@ -3255,7 +3255,7 @@ export const COURSE_CONTENT: Record<string, CourseContent> = {
                   },
                   {
                     "text": "Aware but thought it was less serious",
-                    "state": "work_in_progress"
+                    "state": "correct"
                   },
                   {
                     "text": "Concerned and ready to change",
