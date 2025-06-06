@@ -12,7 +12,8 @@
     "db:studio": "npx drizzle-kit studio",
     "db:push": "npx drizzle-kit push:pg",
     "db:prod": "tsx ./scripts/prod.ts",
-    "db:seed": "tsx ./scripts/seed.ts"
+    "db:seed": "tsx ./scripts/seed.ts",
+    "db:seedQuest": "tsx ./scripts/seed-quests.ts"
   },
   "author": {
     "name": "Kevin Yar",

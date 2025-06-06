@@ -154,6 +154,12 @@ export const ProfileQuestionModal = ({
               value={answer}
               onChange={(e) => setAnswer(e.target.value)}
               className="w-full"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleSubmit();
+                }
+              }}
             />
           )}
         </div>
@@ -175,4 +181,4 @@ export const ProfileQuestionModal = ({
       </DialogContent>
     </Dialog>
   );
-}; 
+};

@@ -113,7 +113,7 @@ export async function POST(req: Request) {
     });
 
     // Create the prompt with detailed answer information
-    const prompt = `You are an AI mentor with the love, compassion and wisdome of jordan peterson. 
+    const prompt = `You are an AI mentor with the love, compassion and wisdome of jordan peterson embracing directness. 
     Your task is to give feedback to a young man using an app which focuses on their growth towards healthy masculinity.
     You will be given the user's profile answers, the unit recommendation, their wrong answers, and their work-in-progress answers:
 
@@ -121,7 +121,7 @@ Unit Information:
 Title: ${unitData?.title || 'Unknown Unit'}
 Description: ${unitData?.description || 'No description available'}
 
-Profile Question Answers:
+Profile Questions:
 ${profileAnswers.map(a => 
   `Question: ${a.question.question}\nAnswer: ${a.answer}`
 ).join('\n\n') || 'None'}
@@ -131,29 +131,31 @@ Title: ${unitData?.recommendationTitle || 'None'}
 Type: ${unitData?.recommendationType || 'None'}
 Author: ${unitData?.recommendationAuthor || 'None'}
 
-Work in Progress Answers:
+Unit questions: Work in Progress Answers:
 ${answersGrouped['work_in_progress']?.map(a => 
   `Question: ${a.question}\nAnswer: ${a.selectedAnswer}`
 ).join('\n\n') || 'None'}
 
-Wrong Answers:
+unit questtions: Wrong Answers:
 ${answersGrouped['wrong']?.map(a => 
   `Question: ${a.question}\nAnswer: ${a.selectedAnswer}`
 ).join('\n\n') || 'None'}
 
 Please provide:
-A reflection of the users progress based on their answers and profile with focus on the current unit. 
-Shortly summarize the user's question answers, focusing on their strengths and areas for improvement. Keep it short. 
-You should try to be as personal as possible to make the user feel seen and understood.
+A reflection of the users progress based on their unit answers and profile with focus on the current unit. 
+Very Shortly give the feedback regarding the 'work in progress' and 'wrong' answers, focusing on their strengths and areas for improvement. Keep it short. 
+You should try to be as personal as possible to make the user feel seen and understood without sounding like a robot. You can use jokes if appropriate.
 Remind the user to take a breather, stand up and stretch, and drink some water. He can come back later to continue his journey.
 Important: If this its unit 0 (statistics), ensure to mention that these numbers shouldnt scare the user but rather make them aware of their current state.
-End the reflection with a positive note, encouraging the user to continue their journey of growth. Generate the response in plain text format, without any markdown or code blocks.`;
+End the reflection with a short encouragement to continue their journey of growth which could include the unit recommendation (its not advertisement but a useful tool, book or app). 
+The unit recommendation should be seperated by 2 linebreaks to make it stand out.
+Generate the response in plain text format, without any markdown or code blocks. AND REMEBER TO KEEP IT SHORT.`;
 
     const completion = await openai.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
       model: "gpt-4.1-nano-2025-04-14",
       temperature: 0.7,
-      max_tokens: 500,
+      max_tokens: 400,
     });
 
     const feedback = completion.choices[0]?.message?.content;

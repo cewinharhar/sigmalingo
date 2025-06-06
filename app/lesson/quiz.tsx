@@ -92,6 +92,8 @@ export const Quiz = ({
   const [status, setStatus] = useState<"none" | "wrong" | "correct" | "work_in_progress">("none");
 
   const [showQuote, setShowQuote] = useState(!!lessonQuote);
+  const challenge = challenges[activeIndex];
+  const options = challenge?.challengeOptions ?? [];
 
   useEffect(() => {
     if (showQuote) {
@@ -102,8 +104,7 @@ export const Quiz = ({
     }
   }, [showQuote]);
 
-  const challenge = challenges[activeIndex];
-  const options = challenge?.challengeOptions ?? [];
+
 
   const onNext = () => {
     setActiveIndex((current) => current + 1);
@@ -234,13 +235,6 @@ export const Quiz = ({
   }
 
   if (!challenge) {
-    useEffect(() => {
-      const timer = setTimeout(() => {
-        router.push("/learn");
-      }, 2000);
-      return () => clearTimeout(timer);
-    }, [router]);
-
     return (
       <>
         {finishAudio}
@@ -284,7 +278,41 @@ export const Quiz = ({
         <Footer
           lessonId={lessonId}
           status="completed"
-          onCheck={() => router.push("/learn")}
+          onCheck={() => {
+            // Check if the unit is completed before redirecting
+            fetch('/api/check-unit-completion', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ unitId }),
+            })
+            .then(res => res.json())
+            .then(({ isCompleted }) => {
+              if (isCompleted) {
+                // If unit is completed, fetch and show feedback before redirecting
+                fetch(`/api/unit-feedback`, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ unitId }),
+                })
+                  .then((res) => res.json())
+                  .then(({ feedback, tools }) => {
+                    openFeedbackModal(feedback, tools);
+                    // Only redirect after showing feedback
+                    setTimeout(() => router.push("/learn"), 1000);
+                  })
+                  .catch((error) => {
+                    console.error("Error fetching feedback:", error);
+                    router.push("/learn");
+                  });
+              } else {
+                router.push("/learn");
+              }
+            })
+            .catch((error) => {
+              console.error("Error checking unit completion:", error);
+              router.push("/learn");
+            });
+          }}
         />
       </>
     );

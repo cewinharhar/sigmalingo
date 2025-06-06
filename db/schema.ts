@@ -264,3 +264,40 @@ export const unitToolsRelations = relations(unitTools, ({ one }) => ({
     references: [units.id],
   }),
 }));
+
+// Quest system tables
+export const quests = pgTable("quests", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  emoji: text("emoji").notNull(),
+  value: integer("value").notNull(),
+  description: text("description").notNull(),
+  resourceType: text("resource_type"),
+  resourceUrl: text("resource_url"),
+  resourceTitle: text("resource_title"),
+  resourceDescription: text("resource_description"),
+  order: integer("order").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const questProgress = pgTable("quest_progress", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  questId: integer("quest_id")
+    .references(() => quests.id, {
+      onDelete: "cascade",
+    })
+    .notNull(),
+  completedAt: timestamp("completed_at").defaultNow(),
+});
+
+export const questRelations = relations(quests, ({ many }) => ({
+  progress: many(questProgress),
+}));
+
+export const questProgressRelations = relations(questProgress, ({ one }) => ({
+  quest: one(quests, {
+    fields: [questProgress.questId],
+    references: [quests.id],
+  }),
+}));

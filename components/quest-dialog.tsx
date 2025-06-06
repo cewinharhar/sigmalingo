@@ -1,0 +1,133 @@
+"use client";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { ResourceView } from "./resource-view";
+import { Separator } from "./ui/separator";
+import { type Resource } from "@/constants";
+
+interface Quest {
+  id: number;
+  title: string;
+  emoji: string;
+  value: number;
+  description: string;
+  resourceType?: string;
+  resourceUrl?: string;
+  resourceTitle?: string;
+  resourceDescription?: string;
+}
+
+interface QuestDialogProps {
+  quest: Quest | null;
+  onClose: () => void;
+  isOpen: boolean;
+}
+
+export const QuestDialog = ({ quest, onClose, isOpen }: QuestDialogProps) => {
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const getResource = (quest: Quest): Resource | undefined => {
+    if (!quest.resourceType || !quest.resourceUrl) return undefined;
+
+    const validTypes = ['youtube', 'app', 'book', 'website'];
+    if (!validTypes.includes(quest.resourceType)) return undefined;
+
+    return {
+      type: quest.resourceType as Resource['type'],
+      url: quest.resourceUrl,
+      title: quest.resourceTitle || '',
+      description: quest.resourceDescription,
+    };
+  };
+
+  const onComplete = async () => {
+    if (!quest) return;
+
+    try {
+      setIsSubmitting(true);
+      const response = await fetch("/api/quests/complete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          questId: quest.id,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error || "Failed to complete quest");
+      }
+
+      toast.success(`Quest completed! Earned ${quest.value} points`);
+      router.refresh();
+      onClose();
+    } catch (error) {
+      console.error("Failed to complete quest:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to complete quest");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const resource = quest ? getResource(quest) : undefined;
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle className="text-center text-2xl">
+            {quest?.emoji} {quest?.title}
+          </DialogTitle>
+          <DialogDescription className="text-center pt-2 text-base">
+            {quest?.description}
+          </DialogDescription>
+        </DialogHeader>
+
+        {resource && (
+          <>
+            <Separator className="my-4" />
+            <div className="my-4">
+              <ResourceView resource={resource} />
+            </div>
+          </>
+        )}
+
+        <DialogFooter>
+          <div className="flex w-full flex-col gap-y-4">
+            <Button
+              onClick={onComplete}
+              disabled={isSubmitting}
+              variant="primary"
+              className="w-full"
+              size="lg"
+            >
+              I've Completed This Quest ({quest?.value} points)
+            </Button>
+            <Button
+              onClick={onClose}
+              variant="primaryOutline"
+              className="w-full"
+              size="lg"
+            >
+              Maybe Later
+            </Button>
+          </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
