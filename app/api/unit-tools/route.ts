@@ -1,5 +1,9 @@
+// Unit tools API route - handles fetching and generating educational tools
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { auth } from "@clerk/nextjs";
+import { and, eq } from "drizzle-orm";
+import db from "@/db/drizzle";
+import { wrongAnswers, userProfiles, units } from "@/db/schema";
 
 export async function GET(request: Request) {
   try {
@@ -10,10 +14,15 @@ export async function GET(request: Request) {
       return new NextResponse("Unit ID is required", { status: 400 });
     }
 
+    const { userId } = auth();
+
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
     // Get unit details
-    const unit = await db.unit.findUnique({
-      where: { id: parseInt(unitId) },
-      select: { title: true, description: true },
+    const unit = await db.query.units.findFirst({
+      where: eq(units.id, parseInt(unitId)),
     });
 
     if (!unit) {
@@ -21,22 +30,35 @@ export async function GET(request: Request) {
     }
 
     // Get user's wrong answers for this unit
-    const wrongAnswers = await db.wrongAnswer.findMany({
-      where: { unitId: parseInt(unitId) },
-      select: { question: true },
+    const wrongAnswersData = await db.query.wrongAnswers.findMany({
+      where: and(
+        eq(wrongAnswers.unitId, parseInt(unitId)),
+        eq(wrongAnswers.userId, userId)
+      ),
+      with: {
+        challenge: true
+      }
     });
 
     // Get user's profile data
-    const profileData = await db.userProfile.findFirst({
-      select: {
-        learningStyle: true,
-        interests: true,
-        goals: true,
-      },
+    const userProfile = await db.query.userProfiles.findFirst({
+      where: eq(userProfiles.userId, userId)
     });
 
+    // Format wrong answers for the tools generator
+    const formattedWrongAnswers = wrongAnswersData.map(wa => ({
+      question: wa.challenge.question
+    }));
+
+    // Format user profile data for the tools generator
+    const formattedProfile = userProfile ? {
+      learningStyle: userProfile.learningStyle || '',
+      interests: userProfile.interests || [],
+      goals: userProfile.goals || []
+    } : null;
+
     // Generate tools based on unit content and user profile
-    const tools = generateTools(unit, wrongAnswers, profileData);
+    const tools = generateTools(unit, formattedWrongAnswers, formattedProfile);
 
     return NextResponse.json(tools);
   } catch (error) {
@@ -105,4 +127,4 @@ function generateTools(
   }
 
   return tools;
-} 
+}
