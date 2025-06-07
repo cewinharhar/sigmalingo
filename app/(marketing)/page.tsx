@@ -40,20 +40,21 @@ export default function MarketingPage() {
   }, []);
 
   return (
-    <div className="mx-auto flex w-full max-w-[988px] flex-1 flex-col items-center justify-center gap-2 p-4 lg:flex-row">
+    <div className="mx-auto flex w-full max-w-[988px] flex-1 flex-col items-center justify-center gap-4 p-4 pb-24 lg:flex-row lg:gap-8 lg:pb-4">
       <audio ref={audioRef} src="/wantToLove_startPage.mp3" loop />
 
-      <div className="relative mb-8 h-[240px] w-[240px] lg:mb-0 lg:h-[424px] lg:w-[424px]">
+      <div className="relative mb-4 h-[240px] w-[240px] sm:h-[320px] sm:w-[320px] lg:mb-0 lg:h-[424px] lg:w-[424px]">
         <Image
           src="/hero.png"
           alt="Hero"
           fill
-          style={{ objectFit: 'contain' }}
+          priority
+          className="object-contain transition-transform hover:scale-105"
         />
       </div>
 
-      <div className="flex flex-col items-center gap-y-8">
-        <h1 className="max-w-[480px] text-center text-xl font-bold text-white lg:text-3xl">
+      <div className="flex flex-col items-center gap-y-6 lg:gap-y-8">
+        <h1 className="max-w-[480px] text-center text-xl font-bold text-white sm:text-2xl lg:text-3xl">
           Awaken the chad in you. Embrace healthy masculinity bit by bit.
         </h1>
 
@@ -69,7 +70,7 @@ export default function MarketingPage() {
                 afterSignInUrl="/learn"
                 afterSignUpUrl="/learn"
               >
-                <Button size="lg" variant="secondary" className="w-full">
+                <Button size="lg" variant="secondary" className="w-full transition-transform hover:scale-105">
                   Get Started
                 </Button>
               </SignUpButton>
@@ -79,30 +80,34 @@ export default function MarketingPage() {
                 afterSignInUrl="/learn"
                 afterSignUpUrl="/learn"
               >
-                <Button size="lg" variant="primaryOutline" className="w-full">
+                <Button size="lg" variant="primaryOutline" className="w-full transition-transform hover:scale-105">
                   I already have an account
                 </Button>
               </SignInButton>
             </SignedOut>
 
             <SignedIn>
-              <Button size="lg" variant="secondary" className="w-full" asChild>
+              <Button size="lg" variant="secondary" className="w-full transition-transform hover:scale-105" asChild>
                 <Link href="/learn">Continue Learning</Link>
               </Button>
             </SignedIn>
           </ClerkLoaded>
         </div>
       </div>
-      <div className="fixed bottom-20 left-0 right-0 flex flex-col items-center gap-2">
+      <div className="fixed bottom-6 left-0 right-0 flex flex-col items-center gap-2 sm:bottom-8">
         <Button
           onClick={togglePlay}
           variant="ghost"
           size="icon"
-          className="h-10 w-10 rounded-full bg-background/10 backdrop-blur-sm hover:bg-background/20"
+          className="h-12 w-12 rounded-full bg-background/20 backdrop-blur-md transition-all hover:bg-background/30 hover:scale-110 active:scale-95"
         >
-          {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+          {isPlaying ? (
+            <Pause className="h-6 w-6 text-white" />
+          ) : (
+            <Play className="h-6 w-6 text-white" />
+          )}
         </Button>
-        <div className="text-sm text-muted-foreground">
+        <div className="text-sm font-medium text-muted-foreground/90 backdrop-blur-sm">
           {isPlaying ? "Playing Aloboi - Want To Love (Just Raw)" : "Click to play"}
         </div>
       </div>

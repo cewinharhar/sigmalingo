@@ -122,146 +122,148 @@ export const UnitFeedback = ({ unitId }: UnitFeedbackProps) => {
   }
 
   return (
-    <div className="space-y-6">
-      <Card className="p-6 bg-gradient-to-br from-sky-50 to-white">
-        <h2 className="text-2xl font-bold mb-4">Personalized Feedback</h2>
-        <div className="prose prose-sm max-w-none">
-          {feedback.split("\n").map((paragraph, index) => (
-            <p key={index} className="mb-4">
-              {paragraph}
-            </p>
-          ))}
-        </div>
-      </Card>
-
-      {workInProgressAnswers.length > 0 && (
-        <Card className="p-6 bg-gradient-to-br from-orange-50 to-white">
-          <div className="flex items-center gap-3 mb-4">
-            <h2 className="text-2xl font-bold text-orange-600">Answers Needing More Reflection</h2>
-            <Badge variant="outline" className="bg-orange-100 text-orange-600 border-orange-200">
-              {workInProgressAnswers.length}
-            </Badge>
-          </div>
-          <div className="space-y-4">
-            {workInProgressAnswers.map((answer, index) => (
-              <div key={index} className="border-l-4 border-orange-500 pl-4 py-2 bg-orange-50/50 rounded-r-lg">
-                <p className="font-semibold text-orange-900">{answer.question}</p>
-                <p className="text-orange-700">Your answer: {answer.selectedAnswer}</p>
-              </div>
+    <div className="h-full max-h-[calc(100vh-2rem)] overflow-y-auto px-4 py-2">
+      <div className="space-y-6 max-w-4xl mx-auto">
+        <Card className="p-6 bg-gradient-to-br from-sky-50 to-white">
+          <h2 className="text-2xl font-bold mb-4">Personalized Feedback</h2>
+          <div className="prose prose-sm max-w-none">
+            {feedback.split("\n").map((paragraph, index) => (
+              <p key={index} className="mb-4">
+                {paragraph}
+              </p>
             ))}
           </div>
         </Card>
-      )}
 
-      {wrongAnswers.length > 0 && (
-        <Card className="p-6 bg-gradient-to-br from-rose-50 to-white">
-          <div className="flex items-center gap-3 mb-4">
-            <h2 className="text-2xl font-bold text-rose-600">Areas for Improvement</h2>
-            <Badge variant="outline" className="bg-rose-100 text-rose-600 border-rose-200">
-              {wrongAnswers.length}
-            </Badge>
-          </div>
-          <div className="space-y-4">
-            {wrongAnswers.map((answer, index) => (
-              <div key={index} className="border-l-4 border-rose-500 pl-4 py-2 bg-rose-50/50 rounded-r-lg">
-                <p className="font-semibold text-rose-900">{answer.question}</p>
-                <p className="text-rose-700">Your answer: {answer.selectedAnswer}</p>
-              </div>
-            ))}
-          </div>
-        </Card>
-      )}
-
-      {tools.length > 0 && (
-        <Card className="p-6 bg-gradient-to-br from-emerald-50 to-white">
-          <div className="flex items-center gap-3 mb-4">
-            <h2 className="text-2xl font-bold text-emerald-700">Recommended Tools</h2>
-            <Badge variant="outline" className="bg-emerald-100 text-emerald-600 border-emerald-200">
-              {tools.length}
-            </Badge>
-          </div>
-          <div className="space-y-4">
-            {tools.map((tool) => (
-              <div key={tool.toolName} className="border rounded-lg p-4 bg-white/80">
-                <h3 className="text-lg font-semibold mb-2">{tool.toolName}</h3>
-                <p className="text-muted-foreground mb-4">
-                  {tool.toolDescription}
-                </p>
-                {tool.toolUrl && (
-                  <Button
-                    variant="secondary"
-                    onClick={() => window.open(tool.toolUrl, "_blank")}
-                    className="bg-emerald-100 hover:bg-emerald-200 text-emerald-700"
-                  >
-                    Visit Tool
-                  </Button>
-                )}
-              </div>
-            ))}
-          </div>
-        </Card>
-      )}
-
-      <AnimatePresence>
-        {badge && showBadge && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 20 }}
-            transition={{ 
-              type: "spring",
-              stiffness: 300,
-              damping: 25
-            }}
-          >
-            <Card className="p-6 bg-gradient-to-br from-purple-50 to-white overflow-hidden relative">
-              <motion.div 
-                className="absolute top-0 right-0 w-32 h-32 opacity-10"
-                animate={{ 
-                  rotate: [0, 5, -5, 0],
-                  scale: [1, 1.1, 1]
-                }}
-                transition={{ 
-                  duration: 2,
-                  repeat: Infinity,
-                  repeatType: "reverse"
-                }}
-              >
-                <Image
-                  src="/mascot_sigma.png"
-                  alt="Badge Background"
-                  width={128}
-                  height={128}
-                  className="object-contain"
-                />
-              </motion.div>
-              <div className="relative z-10">
-                <div className="flex items-center gap-3 mb-4">
-                  <h2 className="text-2xl font-bold text-purple-700">{badge.title}</h2>
-                  <Badge variant="outline" className="bg-purple-100 text-purple-600 border-purple-200">
-                    Course Complete
-                  </Badge>
+        {workInProgressAnswers.length > 0 && (
+          <Card className="p-6 bg-gradient-to-br from-orange-50 to-white">
+            <div className="flex items-center gap-3 mb-4">
+              <h2 className="text-2xl font-bold text-orange-600">Answers Needing More Reflection</h2>
+              <Badge variant="outline" className="bg-orange-100 text-orange-600 border-orange-200">
+                {workInProgressAnswers.length}
+              </Badge>
+            </div>
+            <div className="space-y-4">
+              {workInProgressAnswers.map((answer, index) => (
+                <div key={index} className="border-l-4 border-orange-500 pl-4 py-2 bg-orange-50/50 rounded-r-lg">
+                  <p className="font-semibold text-orange-900">{answer.question}</p>
+                  <p className="text-orange-700">Your answer: {answer.selectedAnswer}</p>
                 </div>
-                <p className="text-purple-600">{badge.description}</p>
-                <motion.div
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.5 }}
-                  className="mt-4"
-                >
-                  <Button
-                    variant="secondary"
-                    onClick={() => window.open("/learn", "_self")}
-                    className="bg-purple-100 hover:bg-purple-200 text-purple-700"
-                  >
-                    Continue Learning
-                  </Button>
-                </motion.div>
-              </div>
-            </Card>
-          </motion.div>
+              ))}
+            </div>
+          </Card>
         )}
-      </AnimatePresence>
+
+        {wrongAnswers.length > 0 && (
+          <Card className="p-6 bg-gradient-to-br from-rose-50 to-white">
+            <div className="flex items-center gap-3 mb-4">
+              <h2 className="text-2xl font-bold text-rose-600">Areas for Improvement</h2>
+              <Badge variant="outline" className="bg-rose-100 text-rose-600 border-rose-200">
+                {wrongAnswers.length}
+              </Badge>
+            </div>
+            <div className="space-y-4">
+              {wrongAnswers.map((answer, index) => (
+                <div key={index} className="border-l-4 border-rose-500 pl-4 py-2 bg-rose-50/50 rounded-r-lg">
+                  <p className="font-semibold text-rose-900">{answer.question}</p>
+                  <p className="text-rose-700">Your answer: {answer.selectedAnswer}</p>
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
+
+        {tools.length > 0 && (
+          <Card className="p-6 bg-gradient-to-br from-emerald-50 to-white">
+            <div className="flex items-center gap-3 mb-4">
+              <h2 className="text-2xl font-bold text-emerald-700">Recommended Tools</h2>
+              <Badge variant="outline" className="bg-emerald-100 text-emerald-600 border-emerald-200">
+                {tools.length}
+              </Badge>
+            </div>
+            <div className="space-y-4">
+              {tools.map((tool) => (
+                <div key={tool.toolName} className="border rounded-lg p-4 bg-white/80">
+                  <h3 className="text-lg font-semibold mb-2">{tool.toolName}</h3>
+                  <p className="text-muted-foreground mb-4">
+                    {tool.toolDescription}
+                  </p>
+                  {tool.toolUrl && (
+                    <Button
+                      variant="secondary"
+                      onClick={() => window.open(tool.toolUrl, "_blank")}
+                      className="bg-emerald-100 hover:bg-emerald-200 text-emerald-700"
+                    >
+                      Visit Tool
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
+
+        <AnimatePresence>
+          {badge && showBadge && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: 20 }}
+              transition={{ 
+                type: "spring",
+                stiffness: 300,
+                damping: 25
+              }}
+            >
+              <Card className="p-6 bg-gradient-to-br from-purple-50 to-white overflow-hidden relative">
+                <motion.div 
+                  className="absolute top-0 right-0 w-32 h-32 opacity-10"
+                  animate={{ 
+                    rotate: [0, 5, -5, 0],
+                    scale: [1, 1.1, 1]
+                  }}
+                  transition={{ 
+                    duration: 2,
+                    repeat: Infinity,
+                    repeatType: "reverse"
+                  }}
+                >
+                  <Image
+                    src="/mascot_sigma.png"
+                    alt="Badge Background"
+                    width={128}
+                    height={128}
+                    className="object-contain"
+                  />
+                </motion.div>
+                <div className="relative z-10">
+                  <div className="flex items-center gap-3 mb-4">
+                    <h2 className="text-2xl font-bold text-purple-700">{badge.title}</h2>
+                    <Badge variant="outline" className="bg-purple-100 text-purple-600 border-purple-200">
+                      Course Complete
+                    </Badge>
+                  </div>
+                  <p className="text-purple-600">{badge.description}</p>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.5 }}
+                    className="mt-4"
+                  >
+                    <Button
+                      variant="secondary"
+                      onClick={() => window.open("/learn", "_self")}
+                      className="bg-purple-100 hover:bg-purple-200 text-purple-700"
+                    >
+                      Continue Learning
+                    </Button>
+                  </motion.div>
+                </div>
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 };

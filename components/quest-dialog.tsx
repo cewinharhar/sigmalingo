@@ -85,27 +85,27 @@ export const QuestDialog = ({ quest, onClose, isOpen }: QuestDialogProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle className="text-center text-2xl">
+      <DialogContent className="max-w-2xl w-[calc(100%-2rem)] sm:w-full px-3 sm:px-6 max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="space-y-4">
+          <DialogTitle className="text-center text-2xl font-bold break-words">
             {quest?.emoji} {quest?.title}
           </DialogTitle>
-          <DialogDescription className="text-center pt-2 text-base">
+          <DialogDescription className="text-center text-base text-muted-foreground break-words">
             {quest?.description}
           </DialogDescription>
         </DialogHeader>
 
         {resource && (
           <>
-            <Separator className="my-4" />
-            <div className="my-4">
+            <Separator className="my-2" />
+            <div className="relative -mx-3 sm:mx-0">
               <ResourceView resource={resource} />
             </div>
           </>
         )}
 
-        <DialogFooter>
-          <div className="flex w-full flex-col gap-y-4">
+        <DialogFooter className="mt-6 sm:mt-8">
+          <div className="flex w-full flex-col gap-y-3">
             <Button
               onClick={onComplete}
               disabled={isSubmitting}
@@ -113,7 +113,14 @@ export const QuestDialog = ({ quest, onClose, isOpen }: QuestDialogProps) => {
               className="w-full"
               size="lg"
             >
-              I've Completed This Quest ({quest?.value} points)
+              {isSubmitting ? (
+                <span className="flex items-center gap-2">
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                  Completing...
+                </span>
+              ) : (
+                `I've Completed This Quest (${quest?.value} points)`
+              )}
             </Button>
             <Button
               onClick={onClose}

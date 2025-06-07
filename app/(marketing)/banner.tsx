@@ -44,25 +44,24 @@ const Banner = ({ hide, setHide }: BannerProps) => {
   return (
     <div
       id="sticky-banner"
-      className="fixed left-0 top-0 z-50 block h-20 w-full bg-secondary p-2.5 opacity-[0.98] shadow-md sm:h-16 lg:h-10"
+      className="fixed left-0 top-0 z-50 block w-full bg-gradient-to-r from-secondary/95 to-secondary/90 p-2.5 shadow-lg backdrop-blur-sm sm:h-16 lg:h-12"
     >
-      <div className="relative w-full">
+      <div className="relative mx-auto max-w-7xl px-4">
         <div className="flex items-center justify-center">
-          <p className="text-sm font-normal">
+          <p className="text-center text-sm font-normal leading-relaxed text-white sm:text-base">
             📢{" "}
             <strong className="font-semibold">
               Build to help men grow in a world full of unrealistic expectations, hate, distractions and egoism. 
             </strong>{" "}
-            It doesn't take much to start the change. Want to help?{" "}
+            <span className="hidden sm:inline">It doesn't take much to start the change. Want to help?{" "}</span>
             <Link
               href="mailto:kevin.yar@outlook.com"
               target="_blank"
               rel="noreferrer noopener"
-              className="text-green-600 transition-opacity hover:opacity-75"
+              className="inline-flex items-center text-green-400 transition-colors hover:text-green-300"
             >
               Contact me
-            </Link>{" "}
-            for access.
+            </Link>
           </p>
         </div>
 
@@ -70,10 +69,10 @@ const Banner = ({ hide, setHide }: BannerProps) => {
           data-dismiss-target="#sticky-banner"
           onClick={handleBannerClose}
           type="button"
-          className="absolute right-0 top-3/4 -translate-y-1/2 rounded-full border border-gray-300 bg-white p-1 opacity-80 hover:opacity-90 sm:top-1/2"
+          className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-1.5 transition-colors hover:bg-white/20"
+          aria-label="Close banner"
         >
-          <XIcon className="size-3" strokeWidth={3} />
-          <span className="sr-only">Close banner</span>
+          <XIcon className="size-4 text-white" strokeWidth={2.5} />
         </button>
       </div>
     </div>
