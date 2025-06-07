@@ -189,7 +189,15 @@ const main = async () => {
       db.delete(schema.lessons),
       db.delete(schema.courses),
       db.delete(schema.challengeOptions),
+      db.delete(schema.challengeProgress),
       db.delete(schema.userSubscription),
+      db.delete(schema.profileQuestions),
+      db.delete(schema.userProfiles),
+      db.delete(schema.quests),
+      db.delete(schema.questProgress),
+      db.delete(schema.unitTools),
+      db.delete(schema.userProfileAnswers),
+      db.delete(schema.wrongAnswers),
     ]);
 
     // Create courses and their content

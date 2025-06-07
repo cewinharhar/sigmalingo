@@ -3,9 +3,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs";
 import { and, eq } from "drizzle-orm";
 import db from "@/db/drizzle";
-import { wrongAnswers, userProfiles, units } from "@/db/schema";
-
-export const dynamic = 'force-dynamic';
+import { wrongAnswers, userProfiles, units, userProfileAnswers, profileQuestions } from "@/db/schema";
 
 export async function GET(request: Request) {
   try {
@@ -42,9 +40,12 @@ export async function GET(request: Request) {
       }
     });
 
-    // Get user's profile data
-    const userProfile = await db.query.userProfiles.findFirst({
-      where: eq(userProfiles.userId, userId)
+    // Get user's profile answers
+    const profileAnswers = await db.query.userProfileAnswers.findMany({
+      where: eq(userProfileAnswers.userId, userId),
+      with: {
+        question: true
+      }
     });
 
     // Format wrong answers for the tools generator
@@ -52,15 +53,15 @@ export async function GET(request: Request) {
       question: wa.challenge.question
     }));
 
-    // Format user profile data for the tools generator
-    const formattedProfile = userProfile ? {
-      learningStyle: userProfile.learningStyle || '',
-      interests: userProfile.interests || [],
-      goals: userProfile.goals || []
-    } : null;
+    // Format profile answers for the tools generator
+    const formattedProfileAnswers = profileAnswers.map(answer => ({
+      question: answer.question.question,
+      answer: answer.answer,
+      type: answer.question.type
+    }));
 
     // Generate tools based on unit content and user profile
-    const tools = generateTools(unit, formattedWrongAnswers, formattedProfile);
+    const tools = generateTools(unit, formattedWrongAnswers, formattedProfileAnswers);
 
     return NextResponse.json(tools);
   } catch (error) {
@@ -72,61 +73,17 @@ export async function GET(request: Request) {
 function generateTools(
   unit: { title: string; description: string },
   wrongAnswers: { question: string }[],
-  profileData: { learningStyle: string; interests: string[]; goals: string[] } | null
+  profileAnswers: Array<{
+    question: string;
+    answer: string;
+    type: string;
+  }>
 ) {
   const tools: {
     toolName: string;
     toolDescription: string;
     toolUrl?: string;
   }[] = [];
-
-  // Add general learning tools
-  tools.push({
-    toolName: "Quizlet",
-    toolDescription: "Create flashcards and practice quizzes for this unit",
-    toolUrl: "https://quizlet.com",
-  });
-
-  tools.push({
-    toolName: "Duolingo",
-    toolDescription: "Practice language skills with interactive exercises",
-    toolUrl: "https://duolingo.com",
-  });
-
-  // Add tools based on learning style
-  if (profileData?.learningStyle === "visual") {
-    tools.push({
-      toolName: "YouTube",
-      toolDescription: "Watch educational videos about this topic",
-      toolUrl: "https://youtube.com",
-    });
-  }
-
-  if (profileData?.learningStyle === "auditory") {
-    tools.push({
-      toolName: "Spotify",
-      toolDescription: "Listen to educational podcasts about this topic",
-      toolUrl: "https://spotify.com",
-    });
-  }
-
-  // Add tools based on interests
-  if (profileData?.interests.includes("technology")) {
-    tools.push({
-      toolName: "Codecademy",
-      toolDescription: "Learn programming concepts related to this unit",
-      toolUrl: "https://codecademy.com",
-    });
-  }
-
-  // Add tools based on wrong answers
-  if (wrongAnswers.length > 0) {
-    tools.push({
-      toolName: "Practice Exercises",
-      toolDescription: "Additional practice problems focusing on your weak areas",
-      toolUrl: "/practice",
-    });
-  }
 
   return tools;
 }

@@ -147,6 +147,40 @@ duolingo-clone/
 
 <br />
 
+{
+  "Self Growth": [
+    "Unit 0: Facing the Facts",
+    "Unit 1: Taking Responsibility",
+    "Unit 2: Building Mental Strength",
+    "Unit 3: The Heroic Journey"
+  ],
+  "Mental Health": [
+    "Unit 0: The Urgency of Men's Mental Health",
+    "Unit 1: Understanding Your Inner World",
+    "Unit 2: Building Resilience"
+  ],
+  "Physical Health": [
+    "Unit 0: The Stakes of Physical Health",
+    "Unit 1: Your Body as Your Temple"
+  ],
+  "Digital Wellness": [
+    "Unit 0: The Scope of Digital Challenges",
+    "Unit 1: Breaking Digital Chains",
+    "Unit 2: Digital Masculinity",
+    "Unit 3: Confronting Soft-Porn"
+  ],
+  "Life Skills": [
+    "Unit 0: The State of Men Today",
+    "Unit 1: Financial Mastery"
+  ],
+  "Relationships": [
+    "Unit 0: The Stakes of Disconnection",
+    "Unit 1: Authentic Connection",
+    "Unit 2: Leadership in Relationships",
+    "Unit 3: Understanding Women"
+  ]
+}
+
 ## :toolbox: Getting Started
 
 1. Make sure **Git** and **NodeJS** is installed.

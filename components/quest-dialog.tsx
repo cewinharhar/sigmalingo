@@ -22,7 +22,7 @@ interface Quest {
   emoji: string;
   value: number;
   description: string;
-  resourceType?: string;
+  resourceType?: Resource['type'];
   resourceUrl?: string;
   resourceTitle?: string;
   resourceDescription?: string;
@@ -41,11 +41,9 @@ export const QuestDialog = ({ quest, onClose, isOpen }: QuestDialogProps) => {
   const getResource = (quest: Quest): Resource | undefined => {
     if (!quest.resourceType || !quest.resourceUrl) return undefined;
 
-    const validTypes = ['youtube', 'app', 'book', 'website'];
-    if (!validTypes.includes(quest.resourceType)) return undefined;
-
+    // All valid resource types are already checked by TypeScript
     return {
-      type: quest.resourceType as Resource['type'],
+      type: quest.resourceType,
       url: quest.resourceUrl,
       title: quest.resourceTitle || '',
       description: quest.resourceDescription,

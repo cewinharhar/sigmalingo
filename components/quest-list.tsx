@@ -5,6 +5,7 @@
 import { useState, useEffect } from "react";
 import { QuestDialog } from "@/components/quest-dialog";
 import { Separator } from "@/components/ui/separator";
+import { type Resource } from "@/constants";
 
 interface Quest {
   id: number;
@@ -12,7 +13,7 @@ interface Quest {
   emoji: string;
   value: number;
   description: string;
-  resourceType?: string;
+  resourceType?: Resource['type'];
   resourceUrl?: string;
   resourceTitle?: string;
   resourceDescription?: string;

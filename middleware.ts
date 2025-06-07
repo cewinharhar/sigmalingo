@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export default authMiddleware({
-  publicRoutes: ["/", "/api/webhooks/stripe", "/api/profile-answers"],
+  publicRoutes: ["/", "/api/webhooks/stripe", "/api/webhooks/clerk"],
   async afterAuth(auth, req) {
     // If the user is not logged in and trying to access a protected route
     if (!auth.userId && !auth.isPublicRoute) {

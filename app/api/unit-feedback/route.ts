@@ -75,12 +75,20 @@ export async function POST(req: Request) {
       });
     }
 
+    // Get user's profile answers with questions
     const profileAnswers = await db.query.userProfileAnswers.findMany({
       where: eq(userProfileAnswers.userId, userId),
       with: {
         question: true,
       },
     });
+
+    // Format profile answers for the prompt
+    const formattedProfileAnswers = profileAnswers.map(answer => ({
+      question: answer.question.question,
+      answer: answer.answer,
+      type: answer.question.type
+    }));
 
     // Get user's wrong answers for this unit
     const wrongAnswersForUnit = await db.query.wrongAnswers.findMany({
@@ -123,9 +131,9 @@ Unit Information:
 Title: ${unitData?.title || 'Unknown Unit'}
 Description: ${unitData?.description || 'No description available'}
 
-Profile Questions:
-${profileAnswers.map(a => 
-  `Question: ${a.question.question}\nAnswer: ${a.answer}`
+Profile Questions and Answers:
+${formattedProfileAnswers.map(a => 
+  `Question: ${a.question}\nAnswer: ${a.answer}`
 ).join('\n\n') || 'None'}
 
 Unit Recommendation:

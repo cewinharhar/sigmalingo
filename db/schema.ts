@@ -8,6 +8,7 @@ import {
   text,
   timestamp,
   varchar,
+  unique,
 } from "drizzle-orm/pg-core";
 
 import { MAX_HEARTS } from "@/constants";
@@ -184,14 +185,14 @@ export const userProfileAnswers = pgTable("user_profile_answers", {
   answer: text("answer").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
-});
+}, (table) => ({
+  // Ensure each user can only have one answer per question
+  userQuestionUnique: unique().on(table.userId, table.questionId)
+}));
 
 export const userProfiles = pgTable("user_profiles", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id", { length: 191 }).notNull().unique(),
-  learningStyle: varchar("learning_style", { length: 50 }),
-  interests: text("interests").array(),
-  goals: text("goals").array(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

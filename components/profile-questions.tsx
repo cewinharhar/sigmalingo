@@ -55,6 +55,20 @@ export const ProfileQuestions = forwardRef<ProfileQuestionsRef>((_, ref) => {
         if (!response.ok) throw new Error("Failed to fetch questions");
         const { data } = await response.json();
         setQuestions(data);
+        
+        // Initialize answers from the questions data
+        const initialAnswers = data.reduce((acc: Record<number, string>, curr: any) => {
+          if (curr.userAnswer) {
+            if (curr.type === "MULTI_SELECT" && !curr.userAnswer.startsWith("[")) {
+              // Ensure multi-select answers are properly stringified arrays
+              acc[curr.id] = JSON.stringify(curr.userAnswer.split(","));
+            } else {
+              acc[curr.id] = curr.userAnswer;
+            }
+          }
+          return acc;
+        }, {});
+        setAnswers(initialAnswers);
       } catch (error) {
         console.error("Error fetching questions:", error);
         toast.error("Failed to load profile questions");
@@ -63,29 +77,7 @@ export const ProfileQuestions = forwardRef<ProfileQuestionsRef>((_, ref) => {
       }
     };
 
-    const fetchAnswers = async () => {
-      try {
-        const response = await fetch("/api/profile-answers");
-        if (!response.ok) throw new Error("Failed to fetch answers");
-        const { data } = await response.json();
-        const answersMap = data.reduce((acc: Record<number, string>, curr: any) => {
-          // For multi-select answers, ensure we store the stringified array
-          if (curr.type === "MULTI_SELECT" && Array.isArray(curr.answer)) {
-            acc[curr.questionId] = JSON.stringify(curr.answer);
-          } else {
-            acc[curr.questionId] = curr.answer;
-          }
-          return acc;
-        }, {});
-        setAnswers(answersMap);
-      } catch (error) {
-        console.error("Error fetching answers:", error);
-        toast.error("Failed to load profile answers");
-      }
-    };
-
     fetchQuestions();
-    fetchAnswers();
   }, []);
 
   const handleAnswer = async (questionId: number, answer: string) => {

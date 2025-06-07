@@ -131,9 +131,6 @@ async function seed() {
     console.log("👤 Creating default user profile...");
     await db.insert(userProfiles).values({
       userId: "test_user",
-      learningStyle: "Visual",
-      interests: ["Technology", "Business"],
-      goals: ["Career advancement", "Personal development"],
     });
     console.log("✅ Default user profile created successfully!");
 
